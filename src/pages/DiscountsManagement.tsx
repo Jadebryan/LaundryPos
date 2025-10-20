@@ -266,7 +266,7 @@ const DiscountsManagement: React.FC = () => {
 
                 <div className="discount-card-header">
                   <div className="discount-icon">
-                    {discount.type === 'percentage' ? <FiPercent size={32} /> : <FiDollarSign size={32} />}
+                    {discount.type === 'percentage' ? <FiPercent size={32} /> : <span style={{fontSize: '32px', fontWeight: 'bold'}}>₱</span>}
                   </div>
                   <div className="discount-value-display">
                     {discount.type === 'percentage' ? `${discount.value}%` : `₱${discount.value}`}
@@ -280,7 +280,7 @@ const DiscountsManagement: React.FC = () => {
                   
                   <div className="discount-info-grid">
                     <div className="info-row">
-                      <FiDollarSign size={14} />
+                      <span style={{fontSize: '14px', fontWeight: 'bold'}}>₱</span>
                       <span>Min: ₱{discount.minPurchase || 'None'}</span>
                     </div>
                     <div className="info-row">
@@ -368,7 +368,7 @@ const DiscountsManagement: React.FC = () => {
                 <div className="modal-body">
                   <div className="discount-modal-header">
                     <div className="discount-icon-modal">
-                      {selectedDiscount.type === 'percentage' ? <FiPercent size={32} /> : <FiDollarSign size={32} />}
+                      {selectedDiscount.type === 'percentage' ? <FiPercent size={32} /> : <span style={{fontSize: '32px', fontWeight: 'bold'}}>₱</span>}
                     </div>
                     <div>
                       <h2 className="discount-name-modal">{selectedDiscount.name}</h2>

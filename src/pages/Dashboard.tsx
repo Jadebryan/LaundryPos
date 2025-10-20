@@ -91,7 +91,7 @@ const Dashboard: React.FC = () => {
 
   const recentActivity: ActivityItem[] = [
     { id: '1', type: 'order', message: 'New order #ORD-2024-005 from Jane Doe', time: '2 min ago', icon: <FiPackage /> },
-    { id: '2', type: 'payment', message: 'Payment received ₱450 from John Smith', time: '15 min ago', icon: <FiDollarSign /> },
+    { id: '2', type: 'payment', message: 'Payment received ₱450 from John Smith', time: '15 min ago', icon: <span style={{fontSize: '16px', fontWeight: 'bold'}}>₱</span> },
     { id: '3', type: 'customer', message: 'New customer registered: Mike Johnson', time: '1 hour ago', icon: <FiUsers /> },
     { id: '4', type: 'order', message: 'Order #ORD-2024-003 completed', time: '2 hours ago', icon: <FiPackage /> },
   ]
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
             onClick={() => navigate('/orders')}
           />
           <StatCard 
-            icon={<FiDollarSign />}
+            icon={<span style={{fontSize: '18px', fontWeight: 'bold'}}>₱</span>}
             number={`₱${todayStats.revenue.toLocaleString()}`}
             label="Revenue Today" 
             trend={yesterdayComparison.revenue}

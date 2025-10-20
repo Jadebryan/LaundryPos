@@ -34,7 +34,7 @@ const reportTypes: ReportType[] = [
   },
   {
     id: 'revenue',
-    icon: <FiDollarSign size={32} />,
+    icon: <span style={{fontSize: '32px', fontWeight: 'bold'}}>₱</span>,
     title: 'Revenue Report',
     description: 'Financial overview including revenue, expenses, and profit margins',
     color: 'green'

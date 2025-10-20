@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FiSearch, FiFilter, FiDownload, FiEdit2, FiTrash2, FiEye, FiX, FiCalendar, FiDollarSign, FiFileText } from 'react-icons/fi'
+import { FiSearch, FiFilter, FiDownload, FiEdit2, FiTrash2, FiEye, FiX, FiCalendar, FiFileText } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import Layout from '../components/Layout'
 import Button from '../components/Button'

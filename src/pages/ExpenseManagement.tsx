@@ -178,7 +178,7 @@ const ExpenseManagement: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0 }}
           >
-            <div className="stat-icon-small"><FiDollarSign /></div>
+            <div className="stat-icon-small"><span style={{fontSize: '20px', fontWeight: 'bold'}}>₱</span></div>
             <div>
               <div className="stat-number-small">₱{totalExpenses.toLocaleString()}</div>
               <div className="stat-label-small">Total This Month</div>
@@ -397,7 +397,7 @@ const ExpenseManagement: React.FC = () => {
                     </div>
                     <div className="form-group">
                       <label>
-                        <FiDollarSign size={14} /> Amount
+                        <span style={{fontSize: '14px', fontWeight: 'bold'}}>₱</span> Amount
                       </label>
                       <input
                         type="number"

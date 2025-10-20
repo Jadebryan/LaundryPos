@@ -160,7 +160,7 @@ const ServicesManagement: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="stat-icon-small"><FiDollarSign /></div>
+            <div className="stat-icon-small"><span style={{fontSize: '20px', fontWeight: 'bold'}}>₱</span></div>
             <div>
               <div className="stat-number-small">₱{avgPrice}</div>
               <div className="stat-label-small">Avg. Price</div>

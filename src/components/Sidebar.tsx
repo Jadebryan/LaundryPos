@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FiMenu, FiX, FiLogOut, FiHome, FiCreditCard, FiBox, FiList, 
-  FiPercent, FiBarChart2, FiSettings, FiFlag, FiHelpCircle, FiUsers, FiUser, FiDollarSign 
+  FiPercent, FiBarChart2, FiSettings, FiFlag, FiHelpCircle, FiUsers, FiUser, FiFileText 
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import { useUser } from '../context/UserContext'
@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
     { path: '/employees', icon: <FiUser />, label: 'Employees' },
     { path: '/services', icon: <FiBox />, label: 'Services' },
     { path: '/discounts', icon: <FiPercent />, label: 'Discounts' },
-    { path: '/expenses', icon: <FiDollarSign />, label: 'Expenses' },
+    { path: '/expenses', icon: <span style={{fontSize: '18px', fontWeight: 'bold'}}>₱</span>, label: 'Expenses' },
     { path: '/reports', icon: <FiBarChart2 />, label: 'Reports' },
   ]
 

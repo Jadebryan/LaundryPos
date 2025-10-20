@@ -6,6 +6,9 @@ import toast from 'react-hot-toast'
 import { useUser } from '../context/UserContext'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ForgotPasswordModal from '../components/ForgotPasswordModal'
+import BrandIcon from '../components/BrandIcon'
+import AccessInfoModal from '../components/AccessInfoModal'
+import TopLoadingBar from '../components/TopLoadingBar'
 import './Login.css'
 
 type UserType = 'Admin' | 'Staff'
@@ -22,6 +25,8 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [showAccessInfo, setShowAccessInfo] = useState(false)
+  const [emailValid, setEmailValid] = useState<boolean | null>(null)
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,9 +40,10 @@ const Login: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       toast.error('Please enter a valid email address')
+      setEmailValid(false)
       return
     }
-
+    setEmailValid(true)
     setStep(2)
   }
 
@@ -67,6 +73,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
+      <TopLoadingBar active={isLoading} />
       {/* Animated Background */}
       <div className="login-bg">
         <div className="bg-circle bg-circle-1"></div>
@@ -86,7 +93,7 @@ const Login: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <span className="logo-icon">🧺</span>
+          <span className="logo-icon"><BrandIcon size={60} /></span>
           La Bubbles Laundry Shop
         </motion.div>
         
@@ -121,16 +128,9 @@ const Login: React.FC = () => {
               >
                 Admin
               </button>
-              <button
-                type="button"
-                className={`user-type-btn ${userType === 'Staff' ? 'active' : ''}`}
-                onClick={() => setUserType('Staff')}
-              >
-                Staff
-              </button>
             </motion.div>
 
-            <form onSubmit={handleStep1}>
+            <form onSubmit={handleStep1} aria-live="polite">
               <div className="form-group">
                 <label htmlFor="email">
                   <FiMail className="label-icon" />
@@ -141,8 +141,15 @@ const Login: React.FC = () => {
                   id="email"
                   placeholder="your.email@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (emailValid !== null) {
+                      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value)
+                      setEmailValid(ok)
+                    }
+                  }}
                   autoFocus
+                  aria-invalid={emailValid === false}
                 />
               </div>
 
@@ -151,6 +158,7 @@ const Login: React.FC = () => {
                 className="login-btn"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                aria-busy={isLoading}
               >
                 Continue
               </motion.button>
@@ -261,14 +269,21 @@ const Login: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.5 }}
         >
-          <p>Don't have an account? <a href="#">Contact Admin</a></p>
+          <p>Need access? <a href="#" onClick={(e) => { e.preventDefault(); setShowAccessInfo(true) }}>Contact your administrator</a></p>
         </motion.div>
+        <div className="version-badge">v1.0.0</div>
       </motion.div>
 
       {/* Forgot Password Modal */}
       <ForgotPasswordModal 
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
+      />
+
+      {/* Access Info Modal */}
+      <AccessInfoModal
+        isOpen={showAccessInfo}
+        onClose={() => setShowAccessInfo(false)}
       />
     </div>
   )

@@ -3,6 +3,7 @@ import { FiSun, FiMoon, FiSearch, FiBell } from 'react-icons/fi'
 import { useTheme } from '../context/ThemeContext'
 import { motion } from 'framer-motion'
 import KeyboardShortcuts from './KeyboardShortcuts'
+import BrandIcon from './BrandIcon'
 import './Header.css'
 
 interface HeaderProps {
@@ -19,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
     <div className="header">
       <div className="header-surface">
         <div className="header-left">
-          <div className="logo">🧺 La Bubbles Laundry Shop {role === 'admin' ? 'Admin' : 'Staff'}</div>
+          <div className="logo"><BrandIcon size={22} /> La Bubbles Laundry Shop {role === 'admin' ? 'Admin' : 'Staff'}</div>
         </div>
         
         <div className="header-right">

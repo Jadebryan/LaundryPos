@@ -5,6 +5,7 @@ import { FiPrinter, FiMail, FiDownload, FiArrowLeft, FiCheck, FiClock, FiTrash2 
 import toast from 'react-hot-toast'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
+import BrandIcon from '../components/BrandIcon'
 import './InvoiceReceipt.css'
 
 const InvoiceReceipt: React.FC = () => {
@@ -87,7 +88,7 @@ const InvoiceReceipt: React.FC = () => {
             {/* Invoice Header */}
             <div className="invoice-header">
               <div className="company-info">
-                <div className="company-logo">🧺</div>
+                <div className="company-logo"><BrandIcon size={72} /></div>
                 <div>
                   <h1 className="company-name">La Bubbles Laundry Shop</h1>
                   <div className="company-details">

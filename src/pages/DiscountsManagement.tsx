@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiSearch, FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiX, FiPercent, FiDollarSign, FiCalendar, FiTag } from 'react-icons/fi'
+import { FiSearch, FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiX, FiPercent, FiCalendar, FiTag } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import Layout from '../components/Layout'
 import Button from '../components/Button'

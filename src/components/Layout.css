@@ -16,5 +16,12 @@
   margin-left: 250px;
   overflow-y: auto;
   min-height: calc(100vh - 70px);
+  background: var(--color-gray-100);
+  transition: background-color 0.3s ease;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .main-content {
+  background: var(--color-gray-100);
 }
 

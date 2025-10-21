@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FiTrendingUp, FiTrendingDown, FiUsers, FiPackage, FiDollarSign, FiClock, FiActivity, FiCalendar, FiAlertCircle } from 'react-icons/fi'
-import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar } from 'recharts'
+import { FiTrendingUp, FiTrendingDown, FiUsers, FiPackage, FiClock, FiActivity, FiAlertCircle } from 'react-icons/fi'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar } from 'recharts'
 import { useUser } from '../context/UserContext'
+import { useTheme } from '../context/ThemeContext'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
 import './Dashboard.css'
@@ -58,6 +59,7 @@ interface ActivityItem {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
   const { user } = useUser()
+  const { theme } = useTheme()
   const [timeRange, setTimeRange] = useState('today')
   const [currentTime, setCurrentTime] = useState(new Date())
 
@@ -84,9 +86,21 @@ const Dashboard: React.FC = () => {
   ]
 
   const orderStatusData = [
-    { name: 'Pending', value: 8, color: '#FED7AA' },
-    { name: 'In Progress', value: 12, color: '#DBEAFE' },
-    { name: 'Completed', value: 24, color: '#D1FAE5' },
+    { 
+      name: 'Pending', 
+      value: 8, 
+      color: theme === 'dark' ? '#9A3412' : '#FED7AA' 
+    },
+    { 
+      name: 'In Progress', 
+      value: 12, 
+      color: theme === 'dark' ? '#1E3A8A' : '#DBEAFE' 
+    },
+    { 
+      name: 'Completed', 
+      value: 24, 
+      color: theme === 'dark' ? '#064E3B' : '#D1FAE5' 
+    },
   ]
 
   const recentActivity: ActivityItem[] = [
@@ -196,10 +210,17 @@ const Dashboard: React.FC = () => {
             </div>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={revenueData}>
-                <XAxis dataKey="name" stroke="#6B7280" />
-                <YAxis stroke="#6B7280" />
-                <Tooltip />
-                <Bar dataKey="target" fill="#E5E7EB" radius={[4, 4, 0, 0]} />
+                <XAxis dataKey="name" stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} />
+                <YAxis stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: theme === 'dark' ? '#374151' : 'white',
+                    border: theme === 'dark' ? '1px solid #4B5563' : '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    color: theme === 'dark' ? '#F9FAFB' : '#374151'
+                  }}
+                />
+                <Bar dataKey="target" fill={theme === 'dark' ? '#4B5563' : '#E5E7EB'} radius={[4, 4, 0, 0]} />
                 <Bar dataKey="value" fill="#2563EB" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -209,7 +230,7 @@ const Dashboard: React.FC = () => {
                 <span>Actual Revenue</span>
               </div>
               <div className="legend-item">
-                <div className="legend-color" style={{ background: '#E5E7EB' }}></div>
+                <div className="legend-color" style={{ background: theme === 'dark' ? '#4B5563' : '#E5E7EB' }}></div>
                 <span>Target</span>
               </div>
             </div>
@@ -244,7 +265,14 @@ const Dashboard: React.FC = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: theme === 'dark' ? '#374151' : 'white',
+                    border: theme === 'dark' ? '1px solid #4B5563' : '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    color: theme === 'dark' ? '#F9FAFB' : '#374151'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
             <div className="chart-legend">

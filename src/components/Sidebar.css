@@ -167,6 +167,49 @@
   color: var(--color-error);
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .sidebar {
+  background: var(--color-gray-50);
+  border-right-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .nav-section-title {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .nav-item {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .nav-item:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .nav-item.active {
+  background: var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .logout-item {
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .logout-item:hover {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .mobile-menu-btn {
+  background: var(--color-primary-blue);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+[data-theme="dark"] .mobile-menu-btn:hover {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+}
+
 /* Scrollbar for sidebar */
 .sidebar::-webkit-scrollbar {
   width: 6px;
@@ -183,4 +226,63 @@
 
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .sidebar {
+  background: var(--color-gray-50);
+  border-right-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .nav-section-title {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .nav-item {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .nav-item:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .nav-item.active {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .logout-item {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .logout-item:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .mobile-menu-btn {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .mobile-menu-btn:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dim"] .sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
 }

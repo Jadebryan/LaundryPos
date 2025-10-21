@@ -388,6 +388,339 @@
   background: var(--color-gray-400);
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .search-box-large input {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .search-box-large input:focus {
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .search-box-large .search-icon {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .clear-search {
+  background: var(--color-gray-300);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .clear-search:hover {
+  background: var(--color-gray-400);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .filter-select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .employee-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .employee-card:hover {
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .employee-card.inactive {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .status-badge-top.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .status-badge-top.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .employee-card-header {
+  background: linear-gradient(135deg, var(--color-very-light-blue), var(--color-gray-50));
+}
+
+[data-theme="dark"] .employee-avatar-large {
+  background: var(--color-primary-blue);
+  color: white;
+  border-color: var(--color-gray-50);
+}
+
+[data-theme="dark"] .employee-avatar-large.inactive {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .employee-name-large {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .employee-id-badge {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .info-item {
+  color: var(--color-gray-600);
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .info-item svg {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .department-badge {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dark"] .employee-card-footer {
+  background: var(--color-gray-200);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .btn-toggle {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .btn-toggle.active {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .btn-toggle.inactive {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .employee-details-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .employee-name-modal {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .employee-id-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .status-badge-modal.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .status-badge-modal.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .detail-value.active {
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .detail-value.inactive {
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .performance-section h4 {
+  color: var(--color-gray-900);
+  border-bottom-color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .metric-card {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .metric-value {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .metric-label {
+  color: var(--color-gray-600);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .search-box-large input {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .search-box-large input:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .search-box-large .search-icon {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .clear-search {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .clear-search:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .filter-select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .employee-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dim"] .employee-card:hover {
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .employee-card.inactive {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .status-badge-top.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .status-badge-top.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dim"] .employee-card-header {
+  background: linear-gradient(135deg, var(--color-very-light-blue), var(--color-gray-50));
+}
+
+[data-theme="dim"] .employee-avatar-large {
+  background: var(--color-primary-blue);
+  color: white;
+  border-color: var(--color-gray-50);
+}
+
+[data-theme="dim"] .employee-avatar-large.inactive {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dim"] .employee-name-large {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .employee-id-badge {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .info-item {
+  color: var(--color-gray-600);
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .info-item svg {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dim"] .department-badge {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .employee-card-footer {
+  background: var(--color-gray-200);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .btn-toggle {
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .btn-toggle.active {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .btn-toggle.inactive {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+[data-theme="dim"] .employee-details-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .employee-name-modal {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .employee-id-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .status-badge-modal.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .status-badge-modal.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dim"] .detail-value.active {
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .detail-value.inactive {
+  color: var(--color-error);
+}
+
+[data-theme="dim"] .performance-section h4 {
+  color: var(--color-gray-900);
+  border-bottom-color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .metric-card {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .metric-value {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .metric-label {
+  color: var(--color-gray-600);
+}
+
+/* Scrollbar Dark Mode */
+[data-theme="dark"] .employees-grid-container::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .employees-grid-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
   .employee-stats-grid {

@@ -397,6 +397,232 @@
   text-decoration: underline;
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .login-page {
+  background: linear-gradient(135deg, #1E3A8A 0%, #9A3412 100%);
+}
+
+[data-theme="dark"] .login-container {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .login-container .logo {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .login-container .subtitle {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .user-type-selector {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .user-type-btn {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .user-type-btn.active {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dark"] .login-container label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .label-icon {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .login-container input[type="text"],
+[data-theme="dark"] .login-container input[type="email"],
+[data-theme="dark"] .login-container input[type="password"] {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .login-container input[type="text"]:focus,
+[data-theme="dark"] .login-container input[type="email"]:focus,
+[data-theme="dark"] .login-container input[type="password"]:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .password-toggle {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .password-toggle:hover {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .remember-me {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .forgot-password {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .forgot-password:hover {
+  color: var(--color-light-blue);
+}
+
+[data-theme="dark"] .login-footer {
+  border-top-color: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .login-footer a {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .version-badge {
+  background: var(--color-gray-200);
+  color: var(--color-gray-500);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .step-info {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .email-display {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .change-email {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .change-email:hover {
+  color: var(--color-light-blue);
+}
+
+[data-theme="dark"] .back-btn {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .back-btn:hover {
+  color: var(--color-light-blue);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .login-page {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dim"] .login-container {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .login-container .logo {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .login-container .subtitle {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .user-type-selector {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .user-type-btn {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .user-type-btn.active {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .login-container label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .label-icon {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .login-container input[type="text"],
+[data-theme="dim"] .login-container input[type="email"],
+[data-theme="dim"] .login-container input[type="password"] {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .login-container input[type="text"]:focus,
+[data-theme="dim"] .login-container input[type="email"]:focus,
+[data-theme="dim"] .login-container input[type="password"]:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .password-toggle {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .password-toggle:hover {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .remember-me {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .forgot-password {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .forgot-password:hover {
+  color: var(--color-dark-blue);
+}
+
+[data-theme="dim"] .login-footer {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .login-footer a {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .version-badge {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .step-info {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .email-display {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .change-email {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .change-email:hover {
+  color: var(--color-dark-blue);
+}
+
+[data-theme="dim"] .back-btn {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .back-btn:hover {
+  color: var(--color-light-blue);
+}
+
 /* Mobile Responsive */
 @media (max-width: 480px) {
   .login-container {

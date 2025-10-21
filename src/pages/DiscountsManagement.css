@@ -312,6 +312,273 @@
   background: var(--color-gray-400);
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .discount-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .discount-card:hover {
+  border-color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .discount-card.inactive {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .discount-card-header {
+  background: linear-gradient(135deg, var(--color-very-light-orange), var(--color-gray-50));
+}
+
+[data-theme="dark"] .discount-icon {
+  background: var(--color-gray-50);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .discount-value-display {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .discount-type {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .discount-code-badge {
+  background: var(--color-primary-orange);
+  color: white;
+}
+
+[data-theme="dark"] .discount-name-large {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .info-row {
+  color: var(--color-gray-600);
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .info-row svg {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .progress-bar {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .progress-fill {
+  background: linear-gradient(90deg, var(--color-primary-orange), var(--color-light-orange));
+}
+
+[data-theme="dark"] .progress-text {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .discount-card-footer {
+  background: var(--color-gray-200);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .discount-modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .discount-icon-modal {
+  background: var(--color-very-light-orange);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .discount-name-modal {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .discount-code-modal {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .status-badge-modal.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .status-badge-modal.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .detail-value.code {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .detail-value.highlight-orange {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .detail-card input,
+[data-theme="dark"] .detail-card select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .usage-stats-section {
+  background: var(--color-very-light-blue);
+  border-left-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .usage-stats-section h4 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .usage-stat {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .usage-number {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .usage-label {
+  color: var(--color-gray-600);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .discount-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dim"] .discount-card:hover {
+  border-color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .discount-card.inactive {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .discount-card-header {
+  background: linear-gradient(135deg, var(--color-very-light-orange), var(--color-gray-50));
+}
+
+[data-theme="dim"] .discount-icon {
+  background: var(--color-gray-50);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .discount-value-display {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .discount-type {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .discount-code-badge {
+  background: var(--color-primary-orange);
+  color: white;
+}
+
+[data-theme="dim"] .discount-name-large {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .info-row {
+  color: var(--color-gray-600);
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .info-row svg {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dim"] .progress-bar {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .progress-fill {
+  background: linear-gradient(90deg, var(--color-primary-orange), var(--color-light-orange));
+}
+
+[data-theme="dim"] .progress-text {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .discount-card-footer {
+  background: var(--color-gray-200);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .discount-modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .discount-icon-modal {
+  background: var(--color-very-light-orange);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .discount-name-modal {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .discount-code-modal {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .status-badge-modal.active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .status-badge-modal.inactive {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+[data-theme="dim"] .detail-value.code {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .detail-value.highlight-orange {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .detail-card input,
+[data-theme="dim"] .detail-card select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .usage-stats-section {
+  background: var(--color-very-light-blue);
+  border-left-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .usage-stats-section h4 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .usage-stat {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dim"] .usage-number {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .usage-label {
+  color: var(--color-gray-600);
+}
+
+/* Scrollbar Dark Mode */
+[data-theme="dark"] .discounts-grid-container::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .discounts-grid-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
   .discounts-stats-grid {

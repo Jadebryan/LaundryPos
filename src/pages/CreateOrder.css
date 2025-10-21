@@ -283,6 +283,392 @@
   background: var(--color-gray-400);
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .form-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .card-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .form-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus,
+[data-theme="dark"] .form-group textarea:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .readonly-input {
+  background: var(--color-gray-200) !important;
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .summary-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .summary-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .summary-label {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .summary-value {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .summary-value.discount {
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .summary-value.paid {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .summary-divider {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .summary-item.total .summary-label,
+[data-theme="dark"] .summary-item.total .summary-value {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .summary-item.balance {
+  background: var(--color-very-light-orange);
+}
+
+[data-theme="dark"] .summary-item.balance .summary-value {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .payment-status-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .payment-select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .payment-select:focus {
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .notes-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .notes-group textarea {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .notes-group textarea:focus {
+  border-color: var(--color-primary-blue);
+}
+
+/* Scrollbar Dark Mode */
+[data-theme="dark"] .order-form-section::-webkit-scrollbar-thumb,
+[data-theme="dark"] .order-summary-section::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .order-form-section::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .order-summary-section::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .form-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .card-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .form-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .form-group input,
+[data-theme="dim"] .form-group select,
+[data-theme="dim"] .form-group textarea {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .form-group input:focus,
+[data-theme="dim"] .form-group select:focus,
+[data-theme="dim"] .form-group textarea:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .readonly-input {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .summary-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .summary-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .summary-label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .summary-value {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .summary-value.discount {
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .summary-value.paid {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .summary-divider {
+  background: var(--color-gray-300);
+}
+
+[data-theme="dim"] .summary-item.total .summary-label,
+[data-theme="dim"] .summary-item.total .summary-value {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .summary-item.balance {
+  background: var(--color-very-light-orange);
+}
+
+[data-theme="dim"] .summary-item.balance .summary-value {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .payment-status-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .payment-select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .payment-select:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .notes-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .notes-group textarea {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .notes-group textarea:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+/* Additional Dim Mode Optimizations */
+[data-theme="dim"] .create-order-layout {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dim"] .order-form-section {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dim"] .order-summary-section {
+  background: var(--color-gray-100);
+}
+
+[data-theme="dim"] .form-section-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .form-section-subtitle {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .customer-search-input {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .customer-search-input:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .customer-search-input::placeholder {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .service-item {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .service-item:hover {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .service-item.selected {
+  background: var(--color-very-light-blue);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .service-name {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .service-price {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .service-description {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .quantity-controls {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .quantity-btn {
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .quantity-btn:hover {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .quantity-input {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .add-service-btn {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .add-service-btn:hover {
+  background: var(--color-dark-blue);
+}
+
+[data-theme="dim"] .selected-services-list {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .selected-service-item {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .selected-service-name {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .selected-service-price {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .remove-service-btn {
+  background: var(--color-error);
+  color: white;
+}
+
+[data-theme="dim"] .remove-service-btn:hover {
+  background: #B91C1C;
+}
+
+[data-theme="dim"] .summary-section-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .summary-item {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .summary-item:last-child {
+  border-bottom: none;
+}
+
+[data-theme="dim"] .action-buttons {
+  background: var(--color-gray-50);
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .btn-secondary {
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .btn-secondary:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .btn-primary {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .btn-primary:hover {
+  background: var(--color-dark-blue);
+}
+
+/* Scrollbar Dim Mode */
+[data-theme="dim"] .order-form-section::-webkit-scrollbar-thumb,
+[data-theme="dim"] .order-summary-section::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dim"] .order-form-section::-webkit-scrollbar-thumb:hover,
+[data-theme="dim"] .order-summary-section::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .create-order-layout {

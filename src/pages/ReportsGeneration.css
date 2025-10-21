@@ -407,6 +407,351 @@
   background: var(--color-gray-400);
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .report-config-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .config-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .config-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .config-group input,
+[data-theme="dark"] .config-group select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .config-group input:focus,
+[data-theme="dark"] .config-group select:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .quick-date-buttons {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .quick-label {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .quick-btn {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .quick-btn:hover {
+  background: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dark"] .section-title-reports {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .report-type-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .report-type-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .report-type-card.blue .report-card-icon {
+  background: var(--color-very-light-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .report-type-card.orange .report-card-icon {
+  background: var(--color-very-light-orange);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .report-type-card.green .report-card-icon {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .report-type-card.purple .report-card-icon {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+
+[data-theme="dark"] .report-type-card.pink .report-card-icon {
+  background: #FCE7F3;
+  color: #EC4899;
+}
+
+[data-theme="dark"] .report-type-card.cyan .report-card-icon {
+  background: #CFFAFE;
+  color: #06B6D4;
+}
+
+[data-theme="dark"] .report-card-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .report-card-description {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .recent-report-item {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .recent-report-item:hover {
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .report-item-icon {
+  background: var(--color-very-light-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .report-item-name {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .report-item-meta {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dark"] .format-badge {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dark"] .btn-icon-small {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .btn-icon-small:hover {
+  background: var(--color-very-light-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .btn-icon-small.delete:hover {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+[data-theme="dark"] .modal-preview {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .success-checkmark {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .preview-success h2 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .preview-success p {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .download-options {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dark"] .success-icon {
+  color: var(--color-success);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .report-config-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .config-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .config-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .config-group input,
+[data-theme="dim"] .config-group select {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .config-group input:focus,
+[data-theme="dim"] .config-group select:focus {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .quick-date-buttons {
+  border-top-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .quick-label {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .quick-btn {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .quick-btn:hover {
+  background: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .section-title-reports {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .report-type-card {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dim"] .report-type-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dim"] .report-type-card.blue .report-card-icon {
+  background: var(--color-very-light-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .report-type-card.orange .report-card-icon {
+  background: var(--color-very-light-orange);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .report-type-card.green .report-card-icon {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .report-type-card.purple .report-card-icon {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+
+[data-theme="dim"] .report-type-card.pink .report-card-icon {
+  background: #FCE7F3;
+  color: #EC4899;
+}
+
+[data-theme="dim"] .report-type-card.cyan .report-card-icon {
+  background: #CFFAFE;
+  color: #06B6D4;
+}
+
+[data-theme="dim"] .report-card-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .report-card-description {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .recent-report-item {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
+}
+
+[data-theme="dim"] .recent-report-item:hover {
+  border-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .report-item-icon {
+  background: var(--color-very-light-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .report-item-name {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .report-item-meta {
+  color: var(--color-gray-500);
+}
+
+[data-theme="dim"] .format-badge {
+  background: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .btn-icon-small {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .btn-icon-small:hover {
+  background: var(--color-very-light-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .btn-icon-small.delete:hover {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+[data-theme="dim"] .modal-preview {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dim"] .success-checkmark {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .preview-success h2 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .preview-success p {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .download-options {
+  background: var(--color-gray-200);
+}
+
+[data-theme="dim"] .success-icon {
+  color: var(--color-success);
+}
+
+/* Scrollbar Dark Mode */
+[data-theme="dark"] .reports-management-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-gray-400);
+}
+
+[data-theme="dark"] .reports-management-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-500);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .reports-grid {

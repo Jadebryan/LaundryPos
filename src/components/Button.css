@@ -60,3 +60,26 @@
   color: var(--color-error);
 }
 
+/* Dark Mode Button Styles */
+[data-theme="dark"] .btn-icon {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .btn-icon:hover:not(:disabled) {
+  background: var(--color-gray-200);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .btn-icon.edit:hover:not(:disabled) {
+  border-color: var(--color-primary-orange);
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .btn-icon.delete:hover:not(:disabled) {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+

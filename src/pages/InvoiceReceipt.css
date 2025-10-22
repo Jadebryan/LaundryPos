@@ -68,6 +68,17 @@
   font-weight: 700;
   color: var(--color-primary-blue);
   margin-bottom: 8px;
+  display: inline;
+}
+
+.company-name .brand-part-1 {
+  color: var(--color-primary-blue);
+  font-weight: 700;
+}
+
+.company-name .brand-part-2 {
+  color: var(--color-primary-orange);
+  font-weight: 600;
 }
 
 .company-details {
@@ -431,6 +442,14 @@
   color: var(--color-gray-600);
 }
 
+[data-theme="dark"] .company-name .brand-part-1 {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .company-name .brand-part-2 {
+  color: var(--color-primary-orange);
+}
+
 [data-theme="dark"] .invoice-title {
   color: var(--color-gray-900);
 }
@@ -560,6 +579,14 @@
 
 [data-theme="dim"] .company-details {
   color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .company-name .brand-part-1 {
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .company-name .brand-part-2 {
+  color: var(--color-primary-orange);
 }
 
 [data-theme="dim"] .invoice-title {

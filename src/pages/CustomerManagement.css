@@ -762,3 +762,141 @@
     width: 100%;
   }
 }
+
+/* Modal Dark Mode Styles */
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-large {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .modal-header {
+  background: var(--color-gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .modal-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .modal-body {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .modal-footer {
+  background: var(--color-gray-200);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .customer-modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .customer-name-modal {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .customer-id-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .customer-phone-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .customer-email-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .order-history-section h4 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .order-item {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .order-date {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .order-amount {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .order-status {
+  color: var(--color-gray-800);
+}
+
+/* Modal Dim Mode Styles */
+[data-theme="dim"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dim"] .modal-large {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dim"] .modal-header {
+  background: var(--color-gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dim"] .modal-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .modal-body {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dim"] .modal-footer {
+  background: var(--color-gray-200);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dim"] .customer-modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .customer-name-modal {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .customer-id-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .customer-phone-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .customer-email-modal {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .order-history-section h4 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .order-item {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dim"] .order-date {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .order-amount {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .order-status {
+  color: var(--color-gray-800);
+}

@@ -548,11 +548,11 @@
 }
 
 [data-theme="dark"] .section-title {
-  color: var(--color-gray-900);
+  color: var(--color-gray-50);
 }
 
 [data-theme="dark"] .section-subtitle {
-  color: var(--color-gray-500);
+  color: var(--color-gray-300);
 }
 
 [data-theme="dark"] .alert-card {
@@ -586,11 +586,11 @@
 }
 
 [data-theme="dark"] .activity-message {
-  color: var(--color-gray-600);
+  color: var(--color-gray-200);
 }
 
 [data-theme="dark"] .activity-time {
-  color: var(--color-gray-500);
+  color: var(--color-gray-400);
 }
 
 /* Page Header Dark Mode */
@@ -613,6 +613,22 @@
 
 [data-theme="dark"] .stat-trend.negative {
   color: var(--color-error);
+}
+
+[data-theme="dark"] .page-title-large {
+  color: var(--color-gray-50);
+}
+
+[data-theme="dark"] .page-subtitle-enhanced {
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .action-title {
+  color: white;
+}
+
+[data-theme="dark"] .action-desc {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Dim Mode Styles */
@@ -717,6 +733,22 @@
 
 [data-theme="dim"] .stat-trend.positive {
   color: var(--color-success);
+}
+
+[data-theme="dim"] .page-title-large {
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .page-subtitle-enhanced {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .action-title {
+  color: white;
+}
+
+[data-theme="dim"] .action-desc {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 [data-theme="dim"] .stat-trend.negative {

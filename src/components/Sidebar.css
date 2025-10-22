@@ -210,31 +210,17 @@
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
 }
 
-/* Scrollbar for sidebar */
+/* Hide scrollbar for sidebar */
+.sidebar {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
 .sidebar::-webkit-scrollbar {
-  width: 6px;
+  display: none; /* WebKit */
 }
 
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--color-gray-300);
-  border-radius: 3px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-400);
-}
-
-[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
-  background: var(--color-gray-400);
-}
-
-[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-500);
-}
 
 /* Dim Mode Styles */
 [data-theme="dim"] .sidebar {
@@ -279,10 +265,3 @@
   color: var(--color-gray-800);
 }
 
-[data-theme="dim"] .sidebar::-webkit-scrollbar-thumb {
-  background: var(--color-gray-400);
-}
-
-[data-theme="dim"] .sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gray-500);
-}

@@ -4,11 +4,12 @@ interface User {
   username: string
   email: string
   role: 'admin' | 'staff'
+  fullName?: string
 }
 
 interface UserContextType {
   user: User | null
-  login: (username: string, email: string, role: 'admin' | 'staff') => void
+  login: (username: string, email: string, role: 'admin' | 'staff', fullName?: string) => void
   logout: () => void
 }
 
@@ -28,8 +29,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user])
 
-  const login = (username: string, email: string, role: 'admin' | 'staff') => {
-    setUser({ username, email, role })
+  const login = (username: string, email: string, role: 'admin' | 'staff', fullName?: string) => {
+    setUser({ username, email, role, fullName })
   }
 
   const logout = () => {

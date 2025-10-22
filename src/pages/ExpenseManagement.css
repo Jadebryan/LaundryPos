@@ -925,3 +925,143 @@
     width: 100%;
   }
 }
+
+/* Modal Dark Mode Styles */
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-large {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .modal-header {
+  background: var(--color-gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .modal-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .modal-body {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .modal-footer {
+  background: var(--color-gray-200);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .expense-modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .expense-amount-large {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dark"] .description-section h4 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .expense-description-full {
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .expense-form {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .form-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .form-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .file-upload-label {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+/* Modal Dim Mode Styles */
+[data-theme="dim"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dim"] .modal-large {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dim"] .modal-header {
+  background: var(--color-gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dim"] .modal-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .modal-body {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dim"] .modal-footer {
+  background: var(--color-gray-200);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dim"] .expense-modal-header {
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dim"] .expense-amount-large {
+  color: var(--color-primary-orange);
+}
+
+[data-theme="dim"] .description-section h4 {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .expense-description-full {
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .expense-form {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dim"] .form-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .form-group label {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .form-group input,
+[data-theme="dim"] .form-group select,
+[data-theme="dim"] .form-group textarea {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .file-upload-label {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
+}

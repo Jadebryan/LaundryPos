@@ -48,3 +48,39 @@
   justify-content: center;
 }
 
+/* Dark Mode Styles */
+[data-theme="dark"] .confirm-dialog-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .confirm-dialog {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .confirm-dialog-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .confirm-dialog-message {
+  color: var(--color-gray-600);
+}
+
+/* Dim Mode Styles */
+[data-theme="dim"] .confirm-dialog-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dim"] .confirm-dialog {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dim"] .confirm-dialog-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .confirm-dialog-message {
+  color: var(--color-gray-600);
+}
+

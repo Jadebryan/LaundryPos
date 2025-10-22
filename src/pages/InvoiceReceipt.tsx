@@ -90,7 +90,9 @@ const InvoiceReceipt: React.FC = () => {
               <div className="company-info">
                 <div className="company-logo"><BrandIcon size={72} /></div>
                 <div>
-                  <h1 className="company-name">La Bubbles Laundry Shop</h1>
+                  <h1 className="company-name">
+                    <span className="brand-part-1">La Bubbles</span> <span className="brand-part-2">Laundry Shop</span>
+                  </h1>
                   <div className="company-details">
                     123 Laundry Street, Clean City<br />
                     Phone: +63 912 345 6789<br />

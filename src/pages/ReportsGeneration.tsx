@@ -301,10 +301,12 @@ const ReportsGeneration: React.FC = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="modal-header">
-                  <h3 className="modal-title">
+                  <div className="modal-title-container">
                     <FiCheck className="success-icon" />
-                    Report Generated Successfully!
-                  </h3>
+                    <h3 className="modal-title">
+                      Report Generated Successfully!
+                    </h3>
+                  </div>
                   <button className="btn-icon" onClick={() => setShowPreview(false)}>
                     <FiX />
                   </button>

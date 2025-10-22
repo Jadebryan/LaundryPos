@@ -2,14 +2,23 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser } from 'react-icons/fi'
+// import ReCAPTCHA from 'react-google-recaptcha'
 import toast from 'react-hot-toast'
 import { useUser } from '../context/UserContext'
 import LoadingSpinner from '../components/LoadingSpinner'
-import ForgotPasswordModal from '../components/ForgotPasswordModal'
 import BrandIcon from '../components/BrandIcon'
-import AccessInfoModal from '../components/AccessInfoModal'
 import TopLoadingBar from '../components/TopLoadingBar'
 import './Login.css'
+
+// Declare grecaptcha global
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (callback: () => void) => void
+      execute: (siteKey: string, options: { action: string }) => Promise<string>
+    }
+  }
+}
 
 type UserType = 'Admin' | 'Staff'
 
@@ -24,9 +33,46 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const [showAccessInfo, setShowAccessInfo] = useState(false)
   const [emailValid, setEmailValid] = useState<boolean | null>(null)
+
+  // reCAPTCHA site key - Disabled to prevent blank page issues
+  // const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '6LdHWvErAAAAAKxcuDftkz1zWXUJgyRpXJ4tJm2X'
+
+  // Disable reCAPTCHA script loading to prevent blank page
+  /*
+  useEffect(() => {
+    // Only load if not already loaded
+    if (!document.querySelector('script[src*="recaptcha"]')) {
+      const script = document.createElement('script')
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
+      script.async = true
+      script.defer = true
+      document.head.appendChild(script)
+    }
+  }, [RECAPTCHA_SITE_KEY])
+  */
+
+  // Disabled reCAPTCHA execution to prevent blank page issues
+  /*
+  const executeRecaptcha = async () => {
+    return new Promise<string>((resolve, reject) => {
+      // Wait for grecaptcha to be available
+      const checkGrecaptcha = () => {
+        if (window.grecaptcha && window.grecaptcha.ready) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' })
+              .then(resolve)
+              .catch(reject)
+          })
+        } else {
+          // Retry after a short delay
+          setTimeout(checkGrecaptcha, 100)
+        }
+      }
+      checkGrecaptcha()
+    })
+  }
+  */
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +103,7 @@ const Login: React.FC = () => {
 
     setIsLoading(true)
     
-    // Simulate API call
+    // Disable reCAPTCHA to prevent blank page issues
     setTimeout(() => {
       setIsLoading(false)
       const role = userType.toLowerCase() as 'admin' | 'staff'
@@ -167,7 +213,6 @@ const Login: React.FC = () => {
                 <button 
                   type="button"
                   className="forgot-password"
-                  onClick={() => setShowForgotPassword(true)}
                 >
                   Forgot Password?
                 </button>
@@ -249,6 +294,7 @@ const Login: React.FC = () => {
                   ← Back
                 </button>
               </div>
+
               
               <motion.button 
                 type="submit" 
@@ -269,22 +315,11 @@ const Login: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.5 }}
         >
-          <p>Need access? <a href="#" onClick={(e) => { e.preventDefault(); setShowAccessInfo(true) }}>Contact your administrator</a></p>
+          <p>Need access? <a href="#">Contact your administrator</a></p>
         </motion.div>
         <div className="version-badge">v1.0.0</div>
       </motion.div>
 
-      {/* Forgot Password Modal */}
-      <ForgotPasswordModal 
-        isOpen={showForgotPassword}
-        onClose={() => setShowForgotPassword(false)}
-      />
-
-      {/* Access Info Modal */}
-      <AccessInfoModal
-        isOpen={showAccessInfo}
-        onClose={() => setShowAccessInfo(false)}
-      />
     </div>
   )
 }

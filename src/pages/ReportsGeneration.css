@@ -342,6 +342,48 @@
   overflow: hidden;
 }
 
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
+}
+
+.modal-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.success-icon {
+  color: var(--color-success);
+  font-size: 20px;
+}
+
+.btn-icon {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-300);
+  color: var(--color-gray-700);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: var(--color-gray-300);
+  color: var(--color-gray-800);
+}
+
 .preview-success {
   text-align: center;
   padding: 20px;
@@ -378,7 +420,7 @@
   display: flex;
   gap: 12px;
   padding: 24px;
-  background: var(--color-gray-50);
+  background: transparent;
 }
 
 .download-options button {
@@ -568,7 +610,7 @@
 }
 
 [data-theme="dark"] .download-options {
-  background: var(--color-gray-200);
+  background: transparent;
 }
 
 [data-theme="dark"] .success-icon {
@@ -736,7 +778,7 @@
 }
 
 [data-theme="dim"] .download-options {
-  background: var(--color-gray-200);
+  background: transparent;
 }
 
 [data-theme="dim"] .success-icon {
@@ -798,4 +840,146 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* Additional Modal Dark Mode Styles */
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .modal-large {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .modal-header {
+  background: var(--color-gray-200);
+  border-bottom-color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .modal-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .success-icon {
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .modal-body {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dark"] .modal-footer {
+  background: var(--color-gray-200);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .preview-success p {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .download-options {
+  background: transparent;
+  border: none;
+}
+
+[data-theme="dark"] .btn-icon {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .btn-icon:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-50);
+}
+
+[data-theme="dark"] .download-options button {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .download-options button[class*="secondary"] {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+  border: 1px solid var(--color-gray-300);
+}
+
+[data-theme="dark"] .download-options button[class*="secondary"]:hover {
+  background: var(--color-gray-300);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .success-icon {
+  color: var(--color-success);
+}
+
+/* Additional Modal Dim Mode Styles */
+[data-theme="dim"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dim"] .modal-large {
+  background: var(--color-gray-50);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dim"] .modal-header {
+  background: var(--color-gray-200);
+  border-bottom-color: var(--color-gray-300);
+}
+
+[data-theme="dim"] .modal-title {
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .success-icon {
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .modal-body {
+  background: var(--color-gray-50);
+}
+
+[data-theme="dim"] .modal-footer {
+  background: var(--color-gray-200);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dim"] .preview-success p {
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .download-options {
+  background: transparent;
+  border: none;
+}
+
+[data-theme="dim"] .btn-icon {
+  background: var(--color-gray-200);
+  border: 1px solid var(--color-gray-300);
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .btn-icon:hover {
+  background: var(--color-gray-300);
+  color: var(--color-gray-800);
+}
+
+[data-theme="dim"] .download-options button {
+  color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .download-options button[class*="secondary"] {
+  background: var(--color-gray-200);
+  color: var(--color-gray-800);
+  border: 1px solid var(--color-gray-300);
+}
+
+[data-theme="dim"] .download-options button[class*="secondary"]:hover {
+  background: var(--color-gray-300);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dim"] .success-icon {
+  color: var(--color-success);
 }

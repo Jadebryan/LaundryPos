@@ -27,9 +27,9 @@ const Sidebar: React.FC = () => {
   ]
 
   const generalItems = [
-    { path: '#settings', icon: <FiSettings />, label: 'Settings', onClick: () => toast('Settings coming soon') },
-    { path: '#feedback', icon: <FiFlag />, label: 'Feedback', onClick: () => toast.success('Thanks for your feedback!') },
-    { path: '#help', icon: <FiHelpCircle />, label: 'Help', onClick: () => toast('Help center opening soon') },
+    { path: '/settings', icon: <FiSettings />, label: 'Settings', onClick: undefined as any },
+    { path: '/feedback', icon: <FiFlag />, label: 'Feedback', onClick: undefined as any },
+    { path: '/help', icon: <FiHelpCircle />, label: 'Help', onClick: undefined as any },
     { path: '#logout', icon: <FiLogOut />, label: 'Logout', onClick: undefined as any, isLogout: true },
   ]
 

@@ -89,6 +89,7 @@
   gap: 10px;
 }
 
+
 .logo-icon {
   font-size: 36px;
   display: inline-block;
@@ -397,6 +398,22 @@
   text-decoration: underline;
 }
 
+/* reCAPTCHA Styles */
+.recaptcha-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--color-gray-50);
+  border-radius: 12px;
+  border: 1px solid var(--color-gray-200);
+}
+
+.recaptcha-container > div {
+  transform: scale(0.9);
+  transform-origin: center;
+}
+
 /* Dark Mode Styles */
 [data-theme="dark"] .login-page {
   background: linear-gradient(135deg, #1E3A8A 0%, #9A3412 100%);
@@ -410,6 +427,7 @@
 [data-theme="dark"] .login-container .logo {
   color: var(--color-primary-blue);
 }
+
 
 [data-theme="dark"] .login-container .subtitle {
   color: var(--color-gray-500);
@@ -511,6 +529,11 @@
   color: var(--color-light-blue);
 }
 
+[data-theme="dark"] .recaptcha-container {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
+}
+
 /* Dim Mode Styles */
 [data-theme="dim"] .login-page {
   background: var(--color-gray-100);
@@ -524,6 +547,7 @@
 [data-theme="dim"] .login-container .logo {
   color: var(--color-primary-blue);
 }
+
 
 [data-theme="dim"] .login-container .subtitle {
   color: var(--color-gray-600);
@@ -621,6 +645,11 @@
 
 [data-theme="dim"] .back-btn:hover {
   color: var(--color-light-blue);
+}
+
+[data-theme="dim"] .recaptcha-container {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-200);
 }
 
 /* Mobile Responsive */

@@ -1,10 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiSearch, FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiX, FiPercent, FiCalendar, FiTag } from 'react-icons/fi'
+import { FiSearch, FiPlus, FiEdit2, FiArchive, FiToggleLeft, FiToggleRight, FiX, FiPercent, FiCalendar, FiTag, FiEye, FiEyeOff, FiRotateCcw, FiFolder, FiRotateCw } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
+import LoadingSpinner from '../components/LoadingSpinner'
 import ConfirmDialog from '../components/ConfirmDialog'
+import ViewToggle, { ViewMode } from '../components/ViewToggle'
+import AddDiscountModal from '../components/AddDiscountModal'
+import { useKeyboardShortcut } from '../hooks/useKeyboardShortcut'
+import { discountAPI } from '../utils/api'
 import './DiscountsManagement.css'
 
 interface Discount {
@@ -19,96 +24,140 @@ interface Discount {
   isActive: boolean
   usageCount: number
   maxUsage: number
+  isArchived?: boolean
 }
 
-const initialDiscounts: Discount[] = [
-  {
-    id: '1',
-    code: 'WELCOME10',
-    name: 'Welcome Discount',
-    type: 'percentage',
-    value: 10,
-    minPurchase: 0,
-    validFrom: 'Jan 1, 2024',
-    validUntil: 'Dec 31, 2024',
-    isActive: true,
-    usageCount: 45,
-    maxUsage: 100
-  },
-  {
-    id: '2',
-    code: 'BULK50',
-    name: 'Bulk Order Discount',
-    type: 'fixed',
-    value: 50,
-    minPurchase: 500,
-    validFrom: 'Jan 1, 2024',
-    validUntil: 'Dec 31, 2024',
-    isActive: true,
-    usageCount: 28,
-    maxUsage: 50
-  },
-  {
-    id: '3',
-    code: 'SENIOR20',
-    name: 'Senior Citizen Discount',
-    type: 'percentage',
-    value: 20,
-    minPurchase: 0,
-    validFrom: 'Jan 1, 2024',
-    validUntil: 'Dec 31, 2024',
-    isActive: true,
-    usageCount: 62,
-    maxUsage: 0
-  },
-  {
-    id: '4',
-    code: 'HOLIDAY15',
-    name: 'Holiday Special',
-    type: 'percentage',
-    value: 15,
-    minPurchase: 200,
-    validFrom: 'Dec 1, 2024',
-    validUntil: 'Jan 15, 2025',
-    isActive: false,
-    usageCount: 0,
-    maxUsage: 200
-  },
-]
-
 const DiscountsManagement: React.FC = () => {
-  const [discounts, setDiscounts] = useState<Discount[]>(initialDiscounts)
+  const [discounts, setDiscounts] = useState<Discount[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('All')
+  const [viewMode, setViewMode] = useState<ViewMode>('cards')
+  const [showArchived, setShowArchived] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
     discount: Discount | null
     action: 'activate' | 'deactivate' | null
   }>({ isOpen: false, discount: null, action: null })
+  
+  // Keyboard shortcuts
+  useKeyboardShortcut([
+    {
+      key: 'f',
+      ctrl: true,
+      callback: () => {
+        searchInputRef.current?.focus()
+      }
+    }
+  ])
+  
+  // Discounts page stats visibility state
+  const [hiddenSections, setHiddenSections] = useState<{
+    stats: boolean
+  }>(() => {
+    const saved = localStorage.getItem('discounts-hidden-sections')
+    return saved ? JSON.parse(saved) : {
+      stats: false
+    }
+  })
+
+  // Save hidden sections to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('discounts-hidden-sections', JSON.stringify(hiddenSections))
+  }, [hiddenSections])
+
+  // Fetch discounts from API
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      setIsLoading(true)
+      try {
+        const data = await discountAPI.getAll({ showArchived })
+        // Map backend data to frontend Discount interface
+        const mappedDiscounts: Discount[] = data.map((d: any) => ({
+          id: d._id || d.id,
+          code: d.code,
+          name: d.name,
+          type: d.type,
+          value: d.value,
+          minPurchase: d.minPurchase || 0,
+          validFrom: d.validFrom ? new Date(d.validFrom).toLocaleDateString() : '',
+          validUntil: d.validUntil ? new Date(d.validUntil).toLocaleDateString() : '',
+          isActive: d.isActive !== false,
+          usageCount: d.usageCount || 0,
+          maxUsage: d.maxUsage || 0,
+          isArchived: d.isArchived || false
+        }))
+        setDiscounts(mappedDiscounts)
+      } catch (error: any) {
+        console.error('Error fetching discounts:', error)
+        toast.error('Failed to load discounts')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDiscounts()
+  }, [showArchived])
+
+  const toggleSection = (section: keyof typeof hiddenSections) => {
+    setHiddenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  }
+
+  const resetAllSections = () => {
+    setHiddenSections({
+      stats: false
+    })
+  }
 
   const handleToggleStatus = (discount: Discount) => {
     const action = discount.isActive ? 'deactivate' : 'activate'
     setConfirmDialog({ isOpen: true, discount, action })
   }
 
-  const confirmToggleStatus = () => {
+  const confirmToggleStatus = async () => {
     if (confirmDialog.discount) {
-      setDiscounts(discounts.map(disc => 
-        disc.id === confirmDialog.discount!.id 
-          ? { ...disc, isActive: !disc.isActive }
-          : disc
-      ))
-      toast.success(`Discount ${confirmDialog.action === 'activate' ? 'activated' : 'deactivated'}!`)
-      setConfirmDialog({ isOpen: false, discount: null, action: null })
+      try {
+        const newIsActive = !confirmDialog.discount.isActive
+        await discountAPI.update(confirmDialog.discount.id, { isActive: newIsActive })
+        setDiscounts(discounts.map(disc => 
+          disc.id === confirmDialog.discount!.id 
+            ? { ...disc, isActive: newIsActive }
+            : disc
+        ))
+        toast.success(`Discount ${confirmDialog.action === 'activate' ? 'activated' : 'deactivated'}!`)
+        setConfirmDialog({ isOpen: false, discount: null, action: null })
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to update discount status')
+      }
     }
   }
 
-  const handleDelete = (discountId: string, discountName: string) => {
-    setDiscounts(discounts.filter(d => d.id !== discountId))
-    toast.success(`${discountName} deleted`)
+  const handleArchive = async (discountId: string, discountName: string) => {
+    try {
+      await discountAPI.archive(discountId)
+    setDiscounts(discounts.map(d => d.id === discountId ? { ...d, isArchived: true } : d))
+    toast.success(`${discountName} archived`)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to archive discount')
+    }
+  }
+
+  const handleUnarchive = async (discountId: string, discountName: string) => {
+    try {
+      await discountAPI.unarchive(discountId)
+      setDiscounts(discounts.map(d => d.id === discountId ? { ...d, isArchived: false } : d))
+      toast.success(`${discountName} unarchived`)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to unarchive discount')
+    }
   }
 
   const openModal = (discount: Discount) => {
@@ -123,15 +172,107 @@ const DiscountsManagement: React.FC = () => {
     setIsEditMode(false)
   }
 
-  const handleSave = () => {
-    if (selectedDiscount) {
-      setDiscounts(discounts.map(d => d.id === selectedDiscount.id ? selectedDiscount : d))
+  const openAddModal = () => {
+    setIsAddModalOpen(true)
+  }
+
+  const closeAddModal = () => {
+    setIsAddModalOpen(false)
+  }
+
+  const handleDiscountAdded = (newDiscount: Discount) => {
+    setDiscounts(prev => [...prev, newDiscount])
+  }
+
+  const handleSave = async () => {
+    if (!selectedDiscount) return
+
+    setIsLoading(true)
+    
+    try {
+      // Parse dates from display format to ISO format
+      let validFromValue: string | undefined
+      let validUntilValue: string | undefined
+      
+      try {
+        if (selectedDiscount.validFrom) {
+          const fromDate = new Date(selectedDiscount.validFrom)
+          if (!isNaN(fromDate.getTime())) {
+            validFromValue = fromDate.toISOString()
+          }
+        }
+        if (selectedDiscount.validUntil) {
+          const untilDate = new Date(selectedDiscount.validUntil)
+          if (!isNaN(untilDate.getTime())) {
+            validUntilValue = untilDate.toISOString()
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing dates:', error)
+      }
+
+      // Prepare the data to send to the backend
+      const updateData: any = {
+        code: selectedDiscount.code,
+        name: selectedDiscount.name,
+        type: selectedDiscount.type,
+        value: selectedDiscount.value,
+        minPurchase: selectedDiscount.minPurchase || 0,
+        maxUsage: selectedDiscount.maxUsage || 0,
+        isActive: selectedDiscount.isActive !== false
+      }
+
+      // Add dates if they were parsed successfully
+      if (validFromValue) {
+        updateData.validFrom = validFromValue
+      }
+      if (validUntilValue) {
+        updateData.validUntil = validUntilValue
+      }
+
+      // Call the API to update the discount in the database
+      const response = await discountAPI.update(selectedDiscount.id, updateData)
+      
+      // Get the updated discount data from response
+      const updatedDiscountData = response.data || response
+
+      // Map the response to frontend Discount interface
+      const updatedDiscount: Discount = {
+        id: updatedDiscountData._id || updatedDiscountData.id || selectedDiscount.id,
+        code: updatedDiscountData.code || selectedDiscount.code,
+        name: updatedDiscountData.name || selectedDiscount.name,
+        type: updatedDiscountData.type || selectedDiscount.type,
+        value: updatedDiscountData.value || selectedDiscount.value,
+        minPurchase: updatedDiscountData.minPurchase || selectedDiscount.minPurchase || 0,
+        validFrom: updatedDiscountData.validFrom 
+          ? new Date(updatedDiscountData.validFrom).toLocaleDateString()
+          : selectedDiscount.validFrom,
+        validUntil: updatedDiscountData.validUntil 
+          ? new Date(updatedDiscountData.validUntil).toLocaleDateString()
+          : selectedDiscount.validUntil,
+        isActive: updatedDiscountData.isActive !== false,
+        usageCount: updatedDiscountData.usageCount || selectedDiscount.usageCount || 0,
+        maxUsage: updatedDiscountData.maxUsage || selectedDiscount.maxUsage || 0,
+        isArchived: updatedDiscountData.isArchived || selectedDiscount.isArchived || false
+      }
+
+      // Update local state with the server response
+      setDiscounts(discounts.map(d => d.id === selectedDiscount.id ? updatedDiscount : d))
+      
+      setIsEditMode(false)
       toast.success('Discount updated successfully!')
       closeModal()
+    } catch (error: any) {
+      console.error('Error updating discount:', error)
+      toast.error(error.message || 'Failed to update discount. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const filteredDiscounts = discounts.filter(discount => {
+    if (!showArchived && discount.isArchived) return false
+    if (showArchived && !discount.isArchived) return false
     const matchesSearch = discount.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          discount.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = filterStatus === 'All' || 
@@ -159,13 +300,39 @@ const DiscountsManagement: React.FC = () => {
             <h1 className="page-title">💰 Discount Management</h1>
             <p className="page-subtitle">Manage discount codes and promotions</p>
           </div>
-          <Button onClick={() => toast.success('Add discount modal coming soon!')}>
-            <FiPlus /> Create Discount
-          </Button>
+          <div className="header-actions">
+            <div className="dashboard-controls">
+              <button 
+                className="control-btn"
+                onClick={resetAllSections}
+                title="Show all sections"
+              >
+                <FiRotateCcw />
+              </button>
+              <button 
+                className={`control-btn ${hiddenSections.stats ? 'active' : ''}`}
+                onClick={() => toggleSection('stats')}
+                title={hiddenSections.stats ? 'Show stats' : 'Hide stats'}
+              >
+                {hiddenSections.stats ? <FiEyeOff /> : <FiEye />}
+                <span>Stats</span>
+              </button>
+            </div>
+            <Button onClick={openAddModal}>
+              <FiPlus /> Create Discount
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="discounts-stats-grid">
+        {!hiddenSections.stats && (
+          <motion.div 
+            className="discounts-stats-grid"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
           <motion.div 
             className="stat-card-small blue"
             initial={{ opacity: 0, y: 20 }}
@@ -217,13 +384,15 @@ const DiscountsManagement: React.FC = () => {
               <div className="stat-label-small">Avg. Discount</div>
             </div>
           </motion.div>
-        </div>
+          </motion.div>
+        )}
 
         {/* Search and Filters */}
         <div className="search-filter-bar">
           <div className="search-box-large">
             <FiSearch className="search-icon" />
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Search by code or name..."
               value={searchTerm}
@@ -236,115 +405,233 @@ const DiscountsManagement: React.FC = () => {
             )}
           </div>
 
-          <select
-            className="filter-select"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option>All Status</option>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
+          <div className="filter-controls">
+            <select
+              className="filter-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+            
+            <ViewToggle
+              currentView={viewMode}
+              onViewChange={setViewMode}
+              className="view-toggle-discounts"
+            />
+            
+            <button
+              className={`archive-toggle-btn ${showArchived ? 'active' : ''}`}
+              onClick={() => setShowArchived(!showArchived)}
+              title={showArchived ? 'Show Active' : 'Show Archived'}
+            >
+              <FiFolder size={16} />
+              <span>{showArchived ? 'Archived' : 'Active'}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Discounts Grid */}
-        <div className="discounts-grid-container">
-          <div className="discounts-grid">
-            {filteredDiscounts.map((discount, index) => (
-              <motion.div
-                key={discount.id}
-                className={`discount-card ${!discount.isActive ? 'inactive' : ''}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ y: -4 }}
-              >
-                {/* Status Badge */}
-                <div className={`status-badge-top ${discount.isActive ? 'active' : 'inactive'}`}>
-                  {discount.isActive ? 'Active' : 'Inactive'}
-                </div>
-
-                <div className="discount-card-header">
-                  <div className="discount-icon">
-                    {discount.type === 'percentage' ? <FiPercent size={32} /> : <span style={{fontSize: '32px', fontWeight: 'bold'}}>₱</span>}
+        {/* Discounts Display */}
+        <div className={`discounts-container ${viewMode === 'list' ? 'list-view' : 'grid-view'}`}>
+          {viewMode === 'cards' ? (
+            <div className="discounts-grid">
+              {filteredDiscounts.map((discount, index) => (
+                <motion.div
+                  key={discount.id}
+                  className={`discount-card ${!discount.isActive ? 'inactive' : ''} ${discount.isArchived ? 'archived' : ''}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ y: -4 }}
+                >
+                  {/* Status Badge */}
+                  <div className={`status-badge-top ${discount.isActive ? 'active' : 'inactive'}`}>
+                    {discount.isActive ? 'Active' : 'Inactive'}
                   </div>
-                  <div className="discount-value-display">
-                    {discount.type === 'percentage' ? `${discount.value}%` : `₱${discount.value}`}
-                    <span className="discount-type">{discount.type === 'percentage' ? 'OFF' : 'DISCOUNT'}</span>
-                  </div>
-                </div>
 
-                <div className="discount-card-body">
-                  <div className="discount-code-badge">{discount.code}</div>
-                  <h3 className="discount-name-large">{discount.name}</h3>
-                  
-                  <div className="discount-info-grid">
-                    <div className="info-row">
-                      <span style={{fontSize: '14px', fontWeight: 'bold'}}>₱</span>
-                      <span>Min: ₱{discount.minPurchase || 'None'}</span>
+                  <div className="discount-card-header">
+                    <div className="discount-icon">
+                      {discount.type === 'percentage' ? <FiPercent size={32} /> : <span style={{fontSize: '32px', fontWeight: 'bold'}}>₱</span>}
                     </div>
-                    <div className="info-row">
-                      <FiCalendar size={14} />
-                      <span>Until: {discount.validUntil}</span>
-                    </div>
-                    <div className="info-row">
-                      <FiTag size={14} />
-                      <span>{discount.usageCount}/{discount.maxUsage || '∞'} uses</span>
+                    <div className="discount-value-display">
+                      {discount.type === 'percentage' ? `${discount.value}%` : `₱${discount.value}`}
+                      <span className="discount-type">{discount.type === 'percentage' ? 'OFF' : 'DISCOUNT'}</span>
                     </div>
                   </div>
 
-                  {/* Usage Progress Bar */}
-                  {discount.maxUsage > 0 && (
-                    <div className="usage-progress">
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-fill"
-                          style={{ width: `${(discount.usageCount / discount.maxUsage) * 100}%` }}
-                        ></div>
+                  <div className="discount-card-body">
+                    <div className="discount-code-badge">{discount.code}</div>
+                    <h3 className="discount-name-large">{discount.name}</h3>
+                    
+                    <div className="discount-info-grid">
+                      <div className="info-row">
+                        <span style={{fontSize: '14px', fontWeight: 'bold'}}>₱</span>
+                        <span>Min: ₱{discount.minPurchase || 'None'}</span>
                       </div>
-                      <span className="progress-text">
-                        {Math.round((discount.usageCount / discount.maxUsage) * 100)}% used
-                      </span>
+                      <div className="info-row">
+                        <FiCalendar size={14} />
+                        <span>Until: {discount.validUntil}</span>
+                      </div>
+                      <div className="info-row">
+                        <FiTag size={14} />
+                        <span>{discount.usageCount}/{discount.maxUsage || '∞'} uses</span>
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                <div className="discount-card-footer">
-                  <button
-                    className="btn-icon-small"
-                    onClick={() => openModal(discount)}
-                    title="View Details"
-                  >
-                    <FiTag />
-                  </button>
-                  <button
-                    className="btn-icon-small edit"
-                    onClick={() => {
-                      openModal(discount)
-                      setIsEditMode(true)
-                    }}
-                    title="Edit"
-                  >
-                    <FiEdit2 />
-                  </button>
-                  <button
-                    className={`btn-toggle ${discount.isActive ? 'active' : 'inactive'}`}
-                    onClick={() => handleToggleStatus(discount)}
-                    title={discount.isActive ? 'Deactivate' : 'Activate'}
-                  >
-                    {discount.isActive ? <FiToggleRight size={18} /> : <FiToggleLeft size={18} />}
-                  </button>
-                  <button
-                    className="btn-icon-small delete"
-                    onClick={() => handleDelete(discount.id, discount.name)}
-                    title="Delete"
-                  >
-                    <FiTrash2 />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                    {/* Usage Progress Bar */}
+                    {discount.maxUsage > 0 && (
+                      <div className="usage-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill"
+                            style={{ width: `${(discount.usageCount / discount.maxUsage) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="progress-text">
+                          {Math.round((discount.usageCount / discount.maxUsage) * 100)}% used
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="discount-card-footer">
+                    <button
+                      className="btn-icon-small"
+                      onClick={() => openModal(discount)}
+                      title="View Details"
+                    >
+                      <FiTag />
+                    </button>
+                    <button
+                      className="btn-icon-small edit"
+                      onClick={() => {
+                        openModal(discount)
+                        setIsEditMode(true)
+                      }}
+                      title="Edit"
+                    >
+                      <FiEdit2 />
+                    </button>
+                    <button
+                      className={`btn-toggle ${discount.isActive ? 'active' : 'inactive'}`}
+                      onClick={() => handleToggleStatus(discount)}
+                      title={discount.isActive ? 'Deactivate' : 'Activate'}
+                    >
+                      {discount.isActive ? <FiToggleRight size={18} /> : <FiToggleLeft size={18} />}
+                    </button>
+                    <button
+                      className={`btn-icon-small ${showArchived ? 'restore' : 'delete'}`}
+                      onClick={() => showArchived ? handleUnarchive(discount.id, discount.name) : handleArchive(discount.id, discount.name)}
+                      title={showArchived ? 'Unarchive' : 'Archive'}
+                    >
+                      {showArchived ? <FiRotateCw /> : <FiArchive />}
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="discounts-table-container">
+              <div className="table-wrapper">
+                <table className="discounts-table">
+                  <thead>
+                    <tr>
+                      <th>Discount</th>
+                      <th>Type</th>
+                      <th>Value</th>
+                      <th>Min Purchase</th>
+                      <th>Valid Until</th>
+                      <th>Usage</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDiscounts.map((discount, index) => (
+                      <motion.tr
+                        key={discount.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`discount-row ${!discount.isActive ? 'inactive' : ''}`}
+                      >
+                        <td>
+                          <div className="discount-cell">
+                            <div className="discount-icon">
+                              {discount.type === 'percentage' ? <FiPercent size={16} /> : <span style={{fontSize: '16px', fontWeight: 'bold'}}>₱</span>}
+                            </div>
+                            <div>
+                              <div className="discount-code">{discount.code}</div>
+                              <div className="discount-name">{discount.name}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="discount-type">{discount.type === 'percentage' ? 'Percentage' : 'Fixed'}</span>
+                        </td>
+                        <td>
+                          <span className="discount-value">
+                            {discount.type === 'percentage' ? `${discount.value}%` : `₱${discount.value}`}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="min-purchase">₱{discount.minPurchase || 'None'}</span>
+                        </td>
+                        <td>
+                          <span className="valid-until">{discount.validUntil}</span>
+                        </td>
+                        <td>
+                          <span className="usage">{discount.usageCount}/{discount.maxUsage || '∞'}</span>
+                        </td>
+                        <td>
+                          <span className={`status-badge ${discount.isActive ? 'active' : 'inactive'}`}>
+                            {discount.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons-row">
+                            <button
+                              className="btn-icon-small"
+                              onClick={() => openModal(discount)}
+                              title="View Details"
+                            >
+                              <FiTag />
+                            </button>
+                            <button
+                              className="btn-icon-small edit"
+                              onClick={() => {
+                                openModal(discount)
+                                setIsEditMode(true)
+                              }}
+                              title="Edit"
+                            >
+                              <FiEdit2 />
+                            </button>
+                            <button
+                              className={`btn-toggle-small ${discount.isActive ? 'active' : 'inactive'}`}
+                              onClick={() => handleToggleStatus(discount)}
+                              title={discount.isActive ? 'Deactivate' : 'Activate'}
+                            >
+                              {discount.isActive ? <FiToggleRight size={16} /> : <FiToggleLeft size={16} />}
+                            </button>
+                            <button
+                              className="btn-icon-small delete"
+                              onClick={() => handleArchive(discount.id, discount.name)}
+                              title="Archive"
+                            >
+                              <FiArchive />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Discount Details Modal */}
@@ -491,8 +778,17 @@ const DiscountsManagement: React.FC = () => {
                     </Button>
                   )}
                   {isEditMode && (
-                    <Button onClick={handleSave}>
-                      Save Changes
+                    <Button onClick={handleSave} disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <LoadingSpinner size="small" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <FiEdit2 /> Save Changes
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
@@ -515,6 +811,14 @@ const DiscountsManagement: React.FC = () => {
           type={confirmDialog.action === 'deactivate' ? 'warning' : 'info'}
           onConfirm={confirmToggleStatus}
           onCancel={() => setConfirmDialog({ isOpen: false, discount: null, action: null })}
+        />
+
+        {/* Add Discount Modal */}
+        <AddDiscountModal
+          isOpen={isAddModalOpen}
+          onClose={closeAddModal}
+          onDiscountAdded={handleDiscountAdded}
+          existingDiscounts={discounts}
         />
       </motion.div>
     </Layout>

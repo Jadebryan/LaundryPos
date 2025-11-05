@@ -18,14 +18,20 @@ export const useKeyboardShortcut = (shortcuts: ShortcutConfig[]) => {
         const altMatches = alt ? event.altKey : !event.altKey
 
         if (keyMatches && ctrlMatches && shiftMatches && altMatches) {
+          // Always prevent default browser behavior for our shortcuts
           event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
           callback()
+          return
         }
       })
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    // Use capture phase to intercept before browser default handlers
+    // This is critical for shortcuts like Ctrl+N which browsers handle by default
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
   }, [shortcuts])
 }
 

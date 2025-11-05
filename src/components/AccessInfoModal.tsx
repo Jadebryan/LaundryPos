@@ -17,9 +17,9 @@ const AccessInfoModal: React.FC<AccessInfoModalProps> = ({ isOpen, onClose }) =>
         <div className="modal-body">
           <p>If you need an admin account, please contact:</p>
           <ul>
-            <li>Email: labubbles@example.com</li>
+            <li>Email: sparklean@example.com</li>
             <li>Phone: +63 912 345 6789</li>
-            <li>Facebook: fb.com/LaBubblesLaundryShop</li>
+            <li>Facebook: fb.com/SparkleanLaundryShop</li>
           </ul>
           <p>Your request should include your full name and role.</p>
         </div>

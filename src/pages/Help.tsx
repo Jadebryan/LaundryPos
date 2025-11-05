@@ -34,12 +34,12 @@ const Help: React.FC = () => {
       id: 'getting-started',
       title: 'Getting Started',
       icon: <FiPlay />,
-      description: 'Learn the basics of using La Bubbles Laundry POS',
+      description: 'Learn the basics of using Sparklean Laundry POS',
       items: [
         {
           id: 'first-login',
           question: 'How do I log in for the first time?',
-          answer: 'Use the admin credentials provided by your system administrator. If you need access, contact labubbles@example.com with your full name and role.',
+          answer: 'Use the admin credentials provided by your system administrator. If you need access, contact sparklean@example.com with your full name and role.',
           category: 'getting-started',
           tags: ['login', 'access', 'first-time']
         },
@@ -212,7 +212,7 @@ const Help: React.FC = () => {
           <h1>Help Center</h1>
         </div>
         <p className="help-subtitle">
-          Find answers to common questions and learn how to use La Bubbles Laundry POS effectively
+          Find answers to common questions and learn how to use Sparklean Laundry POS effectively
         </p>
       </div>
 
@@ -361,7 +361,7 @@ const Help: React.FC = () => {
               <FiMail />
               <div>
                 <strong>Email Support</strong>
-                <span>labubbles@example.com</span>
+                <span>sparklean@example.com</span>
               </div>
             </div>
             <div className="contact-method">

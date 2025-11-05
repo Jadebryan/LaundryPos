@@ -17,7 +17,11 @@
   overflow-y: auto;
   min-height: calc(100vh - 70px);
   background: var(--color-gray-100);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, margin-left 0.3s ease;
+}
+
+.main-content.sidebar-collapsed {
+  margin-left: 60px;
 }
 
 /* Dark Mode Styles */

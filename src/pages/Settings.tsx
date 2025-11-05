@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiShield, FiKey, 
@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import { useUser } from '../context/UserContext'
+import { authAPI } from '../utils/api'
 import './Settings.css'
 
 const Settings: React.FC = () => {
@@ -25,9 +26,20 @@ const Settings: React.FC = () => {
   // Form states
   const [profileForm, setProfileForm] = useState({
     username: user?.username || '',
-    email: user?.email || 'admin@labubbles.com',
-    fullName: user?.fullName || 'Administrator'
+    email: user?.email || '',
+    fullName: user?.fullName || ''
   })
+
+  // Load user data when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        username: user.username || '',
+        email: user.email || '',
+        fullName: user.fullName || ''
+      })
+    }
+  }, [user])
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -46,26 +58,57 @@ const Settings: React.FC = () => {
     { id: 'email', label: 'Email', icon: FiMail }
   ]
 
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    toast.success('Profile updated successfully!')
-    setIsLoading(false)
+    try {
+      // Update profile via API
+      await authAPI.updateProfile({
+        username: profileForm.username,
+        email: profileForm.email
+      })
+      
+      // Update local storage user data
+      const userData = localStorage.getItem('user')
+      if (userData) {
+        const parsedUser = JSON.parse(userData)
+        parsedUser.username = profileForm.username
+        parsedUser.email = profileForm.email
+        localStorage.setItem('user', JSON.stringify(parsedUser))
+      }
+      
+      toast.success('Profile updated successfully!')
+    } catch (error: any) {
+      console.error('Profile update error:', error)
+      toast.error(error.message || 'Failed to update profile')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSendVerificationEmail = async () => {
+    if (!emailForm.newEmail || !emailForm.confirmEmail || emailForm.newEmail !== emailForm.confirmEmail) {
+      toast.error('Please enter matching email addresses')
+      return
+    }
+
     setIsLoading(true)
     
-    // Simulate sending verification email
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsEmailVerificationSent(true)
-    toast.success('Verification code sent to your email!')
-    setIsLoading(false)
+    try {
+      await authAPI.sendVerificationCode({ email: emailForm.newEmail })
+      
+      setIsEmailVerificationSent(true)
+      toast.success('Verification code sent to your email! Please check your inbox.', { 
+        duration: 4000 
+      })
+    } catch (error: any) {
+      console.error('Send verification email error:', error)
+      toast.error(error.message || 'Failed to send verification code')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleVerifyCode = async () => {
@@ -76,12 +119,20 @@ const Settings: React.FC = () => {
 
     setIsLoading(true)
     
-    // Simulate code verification
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    setIsCodeVerified(true)
-    toast.success('Email verified successfully!')
-    setIsLoading(false)
+    try {
+      await authAPI.verifyEmailCode({ 
+        email: emailForm.newEmail, 
+        code: verificationCode 
+      })
+      
+      setIsCodeVerified(true)
+      toast.success('Email verified successfully!')
+    } catch (error: any) {
+      console.error('Verify code error:', error)
+      toast.error(error.message || 'Invalid verification code')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -99,12 +150,21 @@ const Settings: React.FC = () => {
 
     setIsLoading(true)
     
-    // Simulate password change
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    toast.success('Password changed successfully!')
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
-    setIsLoading(false)
+    try {
+      // Change password via API
+      await authAPI.changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      })
+      
+      toast.success('Password changed successfully!')
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    } catch (error: any) {
+      console.error('Password change error:', error)
+      toast.error(error.message || 'Password change failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleEmailChange = async (e: React.FormEvent) => {
@@ -115,17 +175,41 @@ const Settings: React.FC = () => {
       return
     }
 
+    if (!isCodeVerified) {
+      toast.error('Please verify your email address first')
+      return
+    }
+
     setIsLoading(true)
     
-    // Simulate email change
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    toast.success('Email changed successfully!')
-    setEmailForm({ newEmail: '', confirmEmail: '' })
-    setIsEmailVerificationSent(false)
-    setIsCodeVerified(false)
-    setVerificationCode('')
-    setIsLoading(false)
+    try {
+      // Update email via API
+      await authAPI.updateProfile({
+        email: emailForm.newEmail
+      })
+      
+      // Update local storage user data
+      const userData = localStorage.getItem('user')
+      if (userData) {
+        const parsedUser = JSON.parse(userData)
+        parsedUser.email = emailForm.newEmail
+        localStorage.setItem('user', JSON.stringify(parsedUser))
+      }
+      
+      // Update profile form
+      setProfileForm({ ...profileForm, email: emailForm.newEmail })
+      
+      toast.success('Email changed successfully!')
+      setEmailForm({ newEmail: '', confirmEmail: '' })
+      setIsEmailVerificationSent(false)
+      setIsCodeVerified(false)
+      setVerificationCode('')
+    } catch (error: any) {
+      console.error('Email change error:', error)
+      toast.error(error.message || 'Failed to change email')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // Early return if user is not available
@@ -354,6 +438,7 @@ const Settings: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
 
                   <div className="form-actions">
                     <button type="submit" className="btn-primary" disabled={isLoading}>

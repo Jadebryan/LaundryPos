@@ -12,7 +12,7 @@ const KeyboardShortcuts: React.FC = () => {
     // Page 1: Basic Navigation
     [
     { keys: ['Ctrl', 'K'], description: 'Open global search' },
-    { keys: ['Ctrl', 'N'], description: 'Create new order' },
+    { keys: ['Ctrl', 'Alt', 'N'], description: 'Create new order' },
     { keys: ['Ctrl', 'D'], description: 'Go to dashboard' },
       { keys: ['Ctrl', 'O'], description: 'Open order management' },
       { keys: ['Ctrl', 'C'], description: 'Go to customer management' },
@@ -25,6 +25,7 @@ const KeyboardShortcuts: React.FC = () => {
       { keys: ['Ctrl', '1'], description: 'Switch to Light mode' },
       { keys: ['Ctrl', '2'], description: 'Switch to Dim mode' },
       { keys: ['Ctrl', '3'], description: 'Switch to Dark mode' },
+      { keys: ['Ctrl', 'B'], description: 'Toggle sidebar' },
       { keys: ['Ctrl', '/'], description: 'Show keyboard shortcuts' },
     { keys: ['Esc'], description: 'Close modal/dialog' },
       { keys: ['Tab'], description: 'Navigate between fields' },
@@ -102,7 +103,15 @@ const KeyboardShortcuts: React.FC = () => {
       key: 'ArrowRight',
       callback: () => {
         if (isOpen) {
-          setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
+          setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))
+        }
+      }
+    },
+    {
+      key: 'ArrowLeft',
+      callback: () => {
+        if (isOpen) {
+          setCurrentPage(prev => Math.max(0, prev - 1))
         }
       }
     }

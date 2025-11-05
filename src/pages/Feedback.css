@@ -925,3 +925,31 @@
     width: 100%;
   }
 }
+
+/* reCAPTCHA Styles for Feedback */
+.feedback-recaptcha {
+  margin: 16px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.feedback-recaptcha .recaptcha-container {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+}
+
+.feedback-recaptcha .recaptcha-container:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="dark"] .feedback-recaptcha .recaptcha-container {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dim"] .feedback-recaptcha .recaptcha-container {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-300);
+}

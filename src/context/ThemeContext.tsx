@@ -6,6 +6,8 @@ interface ThemeContextType {
   theme: Theme
   setTheme: (theme: Theme) => void
   cycleTheme: () => void
+  sidebarCollapsed: boolean
+  toggleSidebar: () => void
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -16,10 +18,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return saved || 'light'
   })
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    const saved = localStorage.getItem('sidebarCollapsed')
+    return saved ? JSON.parse(saved) : false
+  })
+
   useEffect(() => {
     localStorage.setItem('theme', theme)
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed))
+  }, [sidebarCollapsed])
 
   const cycleTheme = () => {
     setTheme(prev => {
@@ -32,8 +43,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
   }
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(prev => !prev)
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, sidebarCollapsed, toggleSidebar }}>
       {children}
     </ThemeContext.Provider>
   )

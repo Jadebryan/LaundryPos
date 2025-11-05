@@ -8,6 +8,7 @@ import CreateOrder from './pages/CreateOrder'
 import OrderManagement from './pages/OrderManagement'
 import CustomerManagement from './pages/CustomerManagement'
 import EmployeeManagement from './pages/EmployeeManagement'
+import StationManagement from './pages/StationManagement'
 import ServicesManagement from './pages/ServicesManagement'
 import DiscountsManagement from './pages/DiscountsManagement'
 import ExpenseManagement from './pages/ExpenseManagement'
@@ -29,6 +30,7 @@ function App() {
         <Route path="/orders" element={<OrderManagement />} />
         <Route path="/customers" element={<CustomerManagement />} />
         <Route path="/employees" element={<EmployeeManagement />} />
+        <Route path="/stations" element={<StationManagement />} />
         <Route path="/services" element={<ServicesManagement />} />
         <Route path="/discounts" element={<DiscountsManagement />} />
         <Route path="/expenses" element={<ExpenseManagement />} />

@@ -402,8 +402,8 @@
 .recaptcha-container {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
-  padding: 16px;
+  margin: 8px 0;
+  padding: 12px;
   background: var(--color-gray-50);
   border-radius: 12px;
   border: 1px solid var(--color-gray-200);
@@ -652,6 +652,47 @@
   border-color: var(--color-gray-200);
 }
 
+/* reCAPTCHA Styles for Login */
+.login-recaptcha {
+  margin: 16px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.login-recaptcha .recaptcha-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.login-recaptcha .recaptcha-container:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* reCAPTCHA status badge */
+.recaptcha-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-700);
+  font-size: 12px;
+  margin-top: 0.5px;
+  margin-bottom: 5px;
+}
+.recaptcha-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.recaptcha-status.ok .dot { background: #10B981; }
+.recaptcha-status.wait .dot { background: #F59E0B; }
+
 /* Mobile Responsive */
 @media (max-width: 480px) {
   .login-container {
@@ -665,5 +706,9 @@
   
   .login-page {
     padding: 20px;
+  }
+  
+  .login-recaptcha .recaptcha-container {
+    transform: scale(0.8);
   }
 }

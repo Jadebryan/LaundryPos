@@ -1,56 +1,158 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiSearch, FiPlus, FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight, FiX, FiStar, FiDollarSign, FiPackage } from 'react-icons/fi'
+import { FiSearch, FiPlus, FiEdit2, FiArchive, FiToggleLeft, FiToggleRight, FiX, FiStar, FiDollarSign, FiPackage, FiEye, FiEyeOff, FiRotateCcw, FiFolder, FiRotateCw } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
+import LoadingSpinner from '../components/LoadingSpinner'
 import ConfirmDialog from '../components/ConfirmDialog'
+import ViewToggle, { ViewMode } from '../components/ViewToggle'
+import AddServiceModal from '../components/AddServiceModal'
 import { Service } from '../types'
+import { useKeyboardShortcut } from '../hooks/useKeyboardShortcut'
+import { serviceAPI } from '../utils/api'
 import './ServicesManagement.css'
 
-const initialServices: Service[] = [
-  { id: '1', name: 'Wash & Fold', category: 'Washing', price: 25, unit: 'kg', isActive: true, isPopular: true },
-  { id: '2', name: 'Dry Cleaning', category: 'Dry Cleaning', price: 150, unit: 'item', isActive: true, isPopular: true },
-  { id: '3', name: 'Ironing', category: 'Ironing', price: 15, unit: 'item', isActive: true },
-  { id: '4', name: 'Express Service', category: 'Special', price: 50, unit: 'flat', isActive: true },
-  { id: '5', name: 'Delicate Items', category: 'Special', price: 200, unit: 'item', isActive: true },
-  { id: '6', name: 'Curtain Cleaning', category: 'Special', price: 180, unit: 'item', isActive: false },
-]
-
 const ServicesManagement: React.FC = () => {
-  const [services, setServices] = useState<Service[]>(initialServices)
+  const [services, setServices] = useState<Service[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedService, setSelectedService] = useState<Service | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('All')
   const [filterStatus, setFilterStatus] = useState('All')
+  const [viewMode, setViewMode] = useState<ViewMode>('cards')
+  const [showArchived, setShowArchived] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
     service: Service | null
     action: 'activate' | 'deactivate' | null
   }>({ isOpen: false, service: null, action: null })
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  
+  // Keyboard shortcuts
+  useKeyboardShortcut([
+    {
+      key: 's',
+      ctrl: true,
+      shift: true,
+      callback: () => {
+        openAddModal()
+      }
+    },
+    {
+      key: 'f',
+      ctrl: true,
+      callback: () => {
+        searchInputRef.current?.focus()
+      }
+    }
+  ])
+  
+  // Services page stats visibility state
+  const [hiddenSections, setHiddenSections] = useState<{
+    stats: boolean
+  }>(() => {
+    const saved = localStorage.getItem('services-hidden-sections')
+    return saved ? JSON.parse(saved) : {
+      stats: false
+    }
+  })
+
+  // Save hidden sections to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('services-hidden-sections', JSON.stringify(hiddenSections))
+  }, [hiddenSections])
+
+  // Fetch services from API
+  useEffect(() => {
+    const fetchServices = async () => {
+      setIsLoading(true)
+      try {
+        const data = await serviceAPI.getAll({ 
+          category: filterCategory !== 'All' ? filterCategory : undefined,
+          showArchived 
+        })
+        // Map backend data to frontend Service interface
+        const mappedServices: Service[] = data.map((s: any) => ({
+          id: s._id || s.id,
+          name: s.name,
+          category: s.category,
+          price: s.price,
+          unit: s.unit,
+          description: s.description || '',
+          isActive: s.isActive !== false,
+          isPopular: s.isPopular || false,
+          isArchived: s.isArchived || false
+        }))
+        setServices(mappedServices)
+      } catch (error: any) {
+        console.error('Error fetching services:', error)
+        toast.error('Failed to load services')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchServices()
+  }, [filterCategory, showArchived])
+
+  const toggleSection = (section: keyof typeof hiddenSections) => {
+    setHiddenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  }
+
+  const resetAllSections = () => {
+    setHiddenSections({
+      stats: false
+    })
+  }
 
   const handleToggleStatus = (service: Service) => {
     const action = service.isActive ? 'deactivate' : 'activate'
     setConfirmDialog({ isOpen: true, service, action })
   }
 
-  const confirmToggleStatus = () => {
+  const confirmToggleStatus = async () => {
     if (confirmDialog.service) {
-      setServices(services.map(svc => 
-        svc.id === confirmDialog.service!.id 
-          ? { ...svc, isActive: !svc.isActive }
-          : svc
-      ))
-      toast.success(`Service ${confirmDialog.action === 'activate' ? 'activated' : 'deactivated'}!`)
-      setConfirmDialog({ isOpen: false, service: null, action: null })
+      try {
+        const newIsActive = !confirmDialog.service.isActive
+        await serviceAPI.update(confirmDialog.service.id, { isActive: newIsActive })
+        setServices(services.map(svc => 
+          svc.id === confirmDialog.service!.id 
+            ? { ...svc, isActive: newIsActive }
+            : svc
+        ))
+        toast.success(`Service ${confirmDialog.action === 'activate' ? 'activated' : 'deactivated'}!`)
+        setConfirmDialog({ isOpen: false, service: null, action: null })
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to update service status')
+      }
     }
   }
 
-  const handleDelete = (serviceId: string, serviceName: string) => {
-    setServices(services.filter(s => s.id !== serviceId))
-    toast.success(`${serviceName} deleted`)
+  const handleArchive = async (serviceId: string, serviceName: string) => {
+    try {
+      await serviceAPI.archive(serviceId)
+    setServices(services.map(s => s.id === serviceId ? { ...s, isArchived: true } : s))
+    toast.success(`${serviceName} archived`)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to archive service')
+    }
+  }
+
+  const handleUnarchive = async (serviceId: string, serviceName: string) => {
+    try {
+      await serviceAPI.unarchive(serviceId)
+      setServices(services.map(s => s.id === serviceId ? { ...s, isArchived: false } : s))
+      toast.success(`${serviceName} unarchived`)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to unarchive service')
+    }
   }
 
   const togglePopular = (serviceId: string) => {
@@ -72,15 +174,71 @@ const ServicesManagement: React.FC = () => {
     setIsEditMode(false)
   }
 
-  const handleSave = () => {
-    if (selectedService) {
-      setServices(services.map(s => s.id === selectedService.id ? selectedService : s))
+  const openAddModal = () => {
+    setIsAddModalOpen(true)
+  }
+
+  const closeAddModal = () => {
+    setIsAddModalOpen(false)
+  }
+
+  const handleServiceAdded = (newService: Service) => {
+    setServices(prev => [...prev, newService])
+  }
+
+  const handleSave = async () => {
+    if (!selectedService) return
+
+    setIsLoading(true)
+    
+    try {
+      // Prepare the data to send to the backend
+      const updateData: any = {
+        name: selectedService.name,
+        category: selectedService.category,
+        price: selectedService.price,
+        unit: selectedService.unit,
+        description: selectedService.description || '',
+        isActive: selectedService.isActive !== false,
+        isPopular: selectedService.isPopular || false
+      }
+
+      // Call the API to update the service in the database
+      const response = await serviceAPI.update(selectedService.id, updateData)
+      
+      // Get the updated service data from response
+      const updatedServiceData = response.data || response
+
+      // Map the response to frontend Service interface
+      const updatedService: Service = {
+        id: updatedServiceData._id || updatedServiceData.id || selectedService.id,
+        name: updatedServiceData.name || selectedService.name,
+        category: updatedServiceData.category || selectedService.category,
+        price: updatedServiceData.price || selectedService.price,
+        unit: updatedServiceData.unit || selectedService.unit,
+        description: updatedServiceData.description || selectedService.description || '',
+        isActive: updatedServiceData.isActive !== false,
+        isPopular: updatedServiceData.isPopular || false,
+        isArchived: updatedServiceData.isArchived || selectedService.isArchived || false
+      }
+
+      // Update local state with the server response
+      setServices(services.map(s => s.id === selectedService.id ? updatedService : s))
+      
+      setIsEditMode(false)
       toast.success('Service updated successfully!')
       closeModal()
+    } catch (error: any) {
+      console.error('Error updating service:', error)
+      toast.error(error.message || 'Failed to update service. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const filteredServices = services.filter(service => {
+    if (!showArchived && service.isArchived) return false
+    if (showArchived && !service.isArchived) return false
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = filterCategory === 'All' || service.category === filterCategory
     const matchesStatus = filterStatus === 'All' || 
@@ -108,13 +266,39 @@ const ServicesManagement: React.FC = () => {
             <h1 className="page-title">🧺 Services Management</h1>
             <p className="page-subtitle">Manage laundry services and pricing</p>
           </div>
-          <Button onClick={() => toast.success('Add service modal coming soon!')}>
-            <FiPlus /> Add New Service
-          </Button>
+          <div className="header-actions">
+            <div className="dashboard-controls">
+              <button 
+                className="control-btn"
+                onClick={resetAllSections}
+                title="Show all sections"
+              >
+                <FiRotateCcw />
+              </button>
+              <button 
+                className={`control-btn ${hiddenSections.stats ? 'active' : ''}`}
+                onClick={() => toggleSection('stats')}
+                title={hiddenSections.stats ? 'Show stats' : 'Hide stats'}
+              >
+                {hiddenSections.stats ? <FiEyeOff /> : <FiEye />}
+                <span>Stats</span>
+              </button>
+            </div>
+            <Button onClick={openAddModal}>
+              <FiPlus /> Add New Service
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="services-stats-grid">
+        {!hiddenSections.stats && (
+          <motion.div 
+            className="services-stats-grid"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
           <motion.div 
             className="stat-card-small blue"
             initial={{ opacity: 0, y: 20 }}
@@ -166,13 +350,15 @@ const ServicesManagement: React.FC = () => {
               <div className="stat-label-small">Avg. Price</div>
             </div>
           </motion.div>
-        </div>
+          </motion.div>
+        )}
 
         {/* Search and Filters */}
         <div className="search-filter-bar">
           <div className="search-box-large">
             <FiSearch className="search-icon" />
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Search services..."
               value={searchTerm}
@@ -185,120 +371,236 @@ const ServicesManagement: React.FC = () => {
             )}
           </div>
 
-          <select
-            className="filter-select"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option>All Categories</option>
-            <option>Washing</option>
-            <option>Dry Cleaning</option>
-            <option>Ironing</option>
-            <option>Special</option>
-          </select>
+          <div className="filter-controls">
+            <select
+              className="filter-select"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              <option>All Categories</option>
+              <option>Washing</option>
+              <option>Dry Cleaning</option>
+              <option>Ironing</option>
+              <option>Special</option>
+            </select>
 
-          <select
-            className="filter-select"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option>All Status</option>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
+            <select
+              className="filter-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+            
+            <ViewToggle
+              currentView={viewMode}
+              onViewChange={setViewMode}
+              className="view-toggle-services"
+            />
+            
+            <button
+              className={`archive-toggle-btn ${showArchived ? 'active' : ''}`}
+              onClick={() => setShowArchived(!showArchived)}
+              title={showArchived ? 'Show Active' : 'Show Archived'}
+            >
+              <FiFolder size={16} />
+              <span>{showArchived ? 'Archived' : 'Active'}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Services Grid */}
-        <div className="services-grid-container">
-          <div className="services-grid">
-            {filteredServices.map((service, index) => (
-              <motion.div
-                key={service.id}
-                className={`service-card ${!service.isActive ? 'inactive' : ''}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ y: -4 }}
-              >
-                {/* Popular Badge */}
-                {service.isPopular && (
-                  <div className="popular-badge-top">
-                    <FiStar size={12} /> Popular
-                  </div>
-                )}
-
-                {/* Status Badge */}
-                <div className={`status-badge-top ${service.isActive ? 'active' : 'inactive'}`}>
-                  {service.isActive ? 'Active' : 'Inactive'}
-                </div>
-
-                <div className="service-card-header">
-                  <div className="service-icon-large">🧺</div>
-                  <div className="service-price-large">
-                    ₱{service.price}
-                    <span className="price-unit">/{service.unit}</span>
-                  </div>
-                </div>
-
-                <div className="service-card-body">
-                  <h3 className="service-name-large">{service.name}</h3>
-                  <div className="service-category-badge">{service.category}</div>
-                  
-                  <div className="service-details-row">
-                    <div className="detail-item">
-                      <span className="detail-label">Unit</span>
-                      <span className="detail-value">{service.unit}</span>
+        {/* Services Display */}
+        <div className={`services-container ${viewMode === 'list' ? 'list-view' : 'grid-view'}`}>
+          {viewMode === 'cards' ? (
+            <div className="services-grid">
+              {filteredServices.map((service, index) => (
+                <motion.div
+                  key={service.id}
+                  className={`service-card ${!service.isActive ? 'inactive' : ''} ${service.isArchived ? 'archived' : ''}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ y: -4 }}
+                >
+                  {/* Popular Badge */}
+                  {service.isPopular && (
+                    <div className="popular-badge-top">
+                      <FiStar size={12} /> Popular
                     </div>
-                    <div className="detail-item">
-                      <span className="detail-label">Price</span>
-                      <span className="detail-value">₱{service.price}</span>
+                  )}
+
+                  {/* Status Badge */}
+                  <div className={`status-badge-top ${service.isActive ? 'active' : 'inactive'}`}>
+                    {service.isActive ? 'Active' : 'Inactive'}
+                  </div>
+
+                  <div className="service-card-header">
+                    <div className="service-icon-large">🧺</div>
+                    <div className="service-price-large">
+                      ₱{service.price}
+                      <span className="price-unit">/{service.unit}</span>
                     </div>
                   </div>
-                </div>
 
-                <div className="service-card-footer">
-                  <button
-                    className="btn-icon-small"
-                    onClick={() => openModal(service)}
-                    title="View Details"
-                  >
-                    <FiPackage />
-                  </button>
-                  <button
-                    className="btn-icon-small edit"
-                    onClick={() => {
-                      openModal(service)
-                      setIsEditMode(true)
-                    }}
-                    title="Edit"
-                  >
-                    <FiEdit2 />
-                  </button>
-                  <button
-                    className="btn-icon-small star"
-                    onClick={() => togglePopular(service.id)}
-                    title={service.isPopular ? 'Remove from Popular' : 'Mark as Popular'}
-                  >
-                    <FiStar fill={service.isPopular ? 'currentColor' : 'none'} />
-                  </button>
-                  <button
-                    className={`btn-toggle ${service.isActive ? 'active' : 'inactive'}`}
-                    onClick={() => handleToggleStatus(service)}
-                    title={service.isActive ? 'Deactivate Service' : 'Activate Service'}
-                  >
-                    {service.isActive ? <FiToggleRight size={18} /> : <FiToggleLeft size={18} />}
-                  </button>
-                  <button
-                    className="btn-icon-small delete"
-                    onClick={() => handleDelete(service.id, service.name)}
-                    title="Delete"
-                  >
-                    <FiTrash2 />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <div className="service-card-body">
+                    <h3 className="service-name-large">{service.name}</h3>
+                    <div className="service-category-badge">{service.category}</div>
+                    
+                    <div className="service-details-row">
+                      <div className="detail-item">
+                        <span className="detail-label">Unit</span>
+                        <span className="detail-value">{service.unit}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-label">Price</span>
+                        <span className="detail-value">₱{service.price}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="service-card-footer">
+                    <button
+                      className="btn-icon-small"
+                      onClick={() => openModal(service)}
+                      title="View Details"
+                    >
+                      <FiPackage />
+                    </button>
+                    <button
+                      className="btn-icon-small edit"
+                      onClick={() => {
+                        openModal(service)
+                        setIsEditMode(true)
+                      }}
+                      title="Edit"
+                    >
+                      <FiEdit2 />
+                    </button>
+                    <button
+                      className="btn-icon-small star"
+                      onClick={() => togglePopular(service.id)}
+                      title={service.isPopular ? 'Remove from Popular' : 'Mark as Popular'}
+                    >
+                      <FiStar fill={service.isPopular ? 'currentColor' : 'none'} />
+                    </button>
+                    <button
+                      className={`btn-toggle ${service.isActive ? 'active' : 'inactive'}`}
+                      onClick={() => handleToggleStatus(service)}
+                      title={service.isActive ? 'Deactivate Service' : 'Activate Service'}
+                    >
+                      {service.isActive ? <FiToggleRight size={18} /> : <FiToggleLeft size={18} />}
+                    </button>
+                    <button
+                      className={`btn-icon-small ${showArchived ? 'restore' : 'delete'}`}
+                      onClick={() => showArchived ? handleUnarchive(service.id, service.name) : handleArchive(service.id, service.name)}
+                      title={showArchived ? 'Unarchive' : 'Archive'}
+                    >
+                      {showArchived ? <FiRotateCw /> : <FiArchive />}
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="services-table-container">
+              <div className="table-wrapper">
+                <table className="services-table">
+                  <thead>
+                    <tr>
+                      <th>Service</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Unit</th>
+                      <th>Status</th>
+                      <th>Popular</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredServices.map((service, index) => (
+                      <motion.tr
+                        key={service.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className={`service-row ${!service.isActive ? 'inactive' : ''}`}
+                      >
+                        <td>
+                          <div className="service-cell">
+                            <div className="service-icon">🧺</div>
+                            <span className="service-name">{service.name}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="service-category">{service.category}</span>
+                        </td>
+                        <td>
+                          <span className="service-price">₱{service.price}</span>
+                        </td>
+                        <td>
+                          <span className="service-unit">{service.unit}</span>
+                        </td>
+                        <td>
+                          <span className={`status-badge ${service.isActive ? 'active' : 'inactive'}`}>
+                            {service.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`popular-badge ${service.isPopular ? 'popular' : 'not-popular'}`}>
+                            {service.isPopular ? '⭐ Popular' : 'No'}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons-row">
+                            <button
+                              className="btn-icon-small"
+                              onClick={() => openModal(service)}
+                              title="View Details"
+                            >
+                              <FiPackage />
+                            </button>
+                            <button
+                              className="btn-icon-small edit"
+                              onClick={() => {
+                                openModal(service)
+                                setIsEditMode(true)
+                              }}
+                              title="Edit"
+                            >
+                              <FiEdit2 />
+                            </button>
+                            <button
+                              className="btn-icon-small star"
+                              onClick={() => togglePopular(service.id)}
+                              title={service.isPopular ? 'Remove from Popular' : 'Mark as Popular'}
+                            >
+                              <FiStar fill={service.isPopular ? 'currentColor' : 'none'} />
+                            </button>
+                            <button
+                              className={`btn-toggle-small ${service.isActive ? 'active' : 'inactive'}`}
+                              onClick={() => handleToggleStatus(service)}
+                              title={service.isActive ? 'Deactivate Service' : 'Activate Service'}
+                            >
+                              {service.isActive ? <FiToggleRight size={16} /> : <FiToggleLeft size={16} />}
+                            </button>
+                            <button
+                              className="btn-icon-small delete"
+                              onClick={() => handleArchive(service.id, service.name)}
+                              title="Archive"
+                            >
+                              <FiArchive />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Service Details Modal */}
@@ -424,8 +726,18 @@ const ServicesManagement: React.FC = () => {
                     </Button>
                   )}
                   {isEditMode && (
-                    <Button onClick={handleSave}>
-                      Save Changes
+                    <Button onClick={handleSave} disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <LoadingSpinner size="small" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <FiEdit2 />
+                          Save Changes
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
@@ -448,6 +760,14 @@ const ServicesManagement: React.FC = () => {
           type={confirmDialog.action === 'deactivate' ? 'warning' : 'info'}
           onConfirm={confirmToggleStatus}
           onCancel={() => setConfirmDialog({ isOpen: false, service: null, action: null })}
+        />
+
+        {/* Add Service Modal */}
+        <AddServiceModal
+          isOpen={isAddModalOpen}
+          onClose={closeAddModal}
+          onServiceAdded={handleServiceAdded}
+          existingServices={services}
         />
       </motion.div>
     </Layout>

@@ -1,4 +1,4 @@
-# 🧺 La Bubbles Laundry Shop - POS & Management System
+# 🧺 Sparklean Laundry Shop - POS & Management System
 
 A comprehensive Laundry Point of Sale (POS) and Management System built with React, TypeScript, and Vite. This modern web application provides a complete solution for managing laundry business operations including orders, customers, employees, services, expenses, and reports.
 

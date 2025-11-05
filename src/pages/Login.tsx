@@ -1,78 +1,83 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser } from 'react-icons/fi'
-// import ReCAPTCHA from 'react-google-recaptcha'
 import toast from 'react-hot-toast'
 import { useUser } from '../context/UserContext'
 import LoadingSpinner from '../components/LoadingSpinner'
 import BrandIcon from '../components/BrandIcon'
 import TopLoadingBar from '../components/TopLoadingBar'
+import GoogleReCAPTCHA from '../components/GoogleReCAPTCHA'
+import ForgotPasswordModal from '../components/ForgotPasswordModal'
+import ConfirmDialog from '../components/ConfirmDialog'
 import './Login.css'
 
-// Declare grecaptcha global
-declare global {
-  interface Window {
-    grecaptcha: {
-      ready: (callback: () => void) => void
-      execute: (siteKey: string, options: { action: string }) => Promise<string>
-    }
-  }
-}
 
 type UserType = 'Admin' | 'Staff'
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
   const { login } = useUser()
+  
+  // Load saved credentials if "Remember Me" was previously checked
+  const loadSavedCredentials = () => {
+    try {
+      const saved = localStorage.getItem('rememberedCredentials')
+      if (saved) {
+        const credentials = JSON.parse(saved)
+        return credentials
+      }
+    } catch (error) {
+      console.error('Error loading saved credentials:', error)
+    }
+    return null
+  }
+
+  const savedCredentials = loadSavedCredentials()
+  
+  // Validate email if it's loaded from saved credentials
+  const getInitialEmailValid = () => {
+    if (savedCredentials?.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      return emailRegex.test(savedCredentials.email)
+    }
+    return null
+  }
+  
   const [step, setStep] = useState<1 | 2>(1)
   const [userType, setUserType] = useState<UserType>('Admin')
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState(savedCredentials?.username || '')
+  const [email, setEmail] = useState(savedCredentials?.email || '')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [rememberMe, setRememberMe] = useState(!!savedCredentials)
   const [isLoading, setIsLoading] = useState(false)
-  const [emailValid, setEmailValid] = useState<boolean | null>(null)
+  const [emailValid, setEmailValid] = useState<boolean | null>(getInitialEmailValid())
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false)
+  const [showRememberMeDialog, setShowRememberMeDialog] = useState(false)
+  const recaptchaToastShownRef = useRef(false)
 
-  // reCAPTCHA site key - Disabled to prevent blank page issues
-  // const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '6LdHWvErAAAAAKxcuDftkz1zWXUJgyRpXJ4tJm2X'
-
-  // Disable reCAPTCHA script loading to prevent blank page
-  /*
-  useEffect(() => {
-    // Only load if not already loaded
-    if (!document.querySelector('script[src*="recaptcha"]')) {
-      const script = document.createElement('script')
-      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`
-      script.async = true
-      script.defer = true
-      document.head.appendChild(script)
+  // reCAPTCHA handlers
+  const handleRecaptchaVerify = (token: string | null) => {
+    setRecaptchaToken(token)
+    if (token && !recaptchaToastShownRef.current) {
+      recaptchaToastShownRef.current = true
+      toast.success('Security verification completed')
     }
-  }, [RECAPTCHA_SITE_KEY])
-  */
-
-  // Disabled reCAPTCHA execution to prevent blank page issues
-  /*
-  const executeRecaptcha = async () => {
-    return new Promise<string>((resolve, reject) => {
-      // Wait for grecaptcha to be available
-      const checkGrecaptcha = () => {
-        if (window.grecaptcha && window.grecaptcha.ready) {
-          window.grecaptcha.ready(() => {
-            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' })
-              .then(resolve)
-              .catch(reject)
-          })
-        } else {
-          // Retry after a short delay
-          setTimeout(checkGrecaptcha, 100)
-        }
-      }
-      checkGrecaptcha()
-    })
   }
-  */
+
+  const handleRecaptchaExpire = () => {
+    setRecaptchaToken(null)
+    recaptchaToastShownRef.current = false
+    toast.error('Security verification expired. Please verify again.')
+  }
+
+  const handleRecaptchaError = () => {
+    setRecaptchaToken(null)
+    recaptchaToastShownRef.current = false
+    toast.error('Security verification failed. Please try again.')
+  }
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,20 +106,104 @@ const Login: React.FC = () => {
       return
     }
 
+    if (!recaptchaToken) {
+      toast.error('Please complete the security verification')
+      return
+    }
+
     setIsLoading(true)
     
-    // Disable reCAPTCHA to prevent blank page issues
-    setTimeout(() => {
-      setIsLoading(false)
-      const role = userType.toLowerCase() as 'admin' | 'staff'
-      login(username, email, role)
-      toast.success(`Welcome back, ${username}!`)
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          password: password,
+          recaptchaToken: recaptchaToken,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Login failed')
+      }
+
+      // Store token and user data
+      const role = data.data.role as 'admin' | 'staff'
+      
+      // Verify token exists before proceeding
+      if (!data.data.token) {
+        throw new Error('No token received from server')
+      }
+      
+      // Handle "Remember Me" functionality
+      if (rememberMe) {
+        // Save credentials for next time
+        localStorage.setItem('rememberedCredentials', JSON.stringify({
+          username: username,
+          email: email
+        }))
+      } else {
+        // Remove saved credentials if "Remember Me" is unchecked
+        localStorage.removeItem('rememberedCredentials')
+      }
+
+      // Update user context first (this also saves to localStorage)
+      login(data.data.username, data.data.email, role, data.data.fullName, data.data.token, data.data.id)
+      
+      // Wait a moment for localStorage to be updated
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // Verify token was saved
+      const savedUser = localStorage.getItem('user')
+      if (!savedUser || !JSON.parse(savedUser).token) {
+        throw new Error('Failed to save authentication token')
+      }
+      
+      toast.success(`Welcome back, ${data.data.username}!`)
       navigate('/dashboard')
-    }, 1500)
+    } catch (error: any) {
+      const errorMessage = error.message || 'Login failed. Please try again.'
+      toast.error(errorMessage)
+      console.error('Login error:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleBack = () => {
     setStep(1)
+    recaptchaToastShownRef.current = false
+  }
+
+  const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.checked
+    
+    // If unchecking, just uncheck it
+    if (!newValue) {
+      setRememberMe(false)
+      return
+    }
+    
+    // If checking, show confirmation dialog
+    setShowRememberMeDialog(true)
+  }
+
+  const handleRememberMeConfirm = () => {
+    setRememberMe(true)
+    setShowRememberMeDialog(false)
+    toast.success('Remember Me enabled. Your email and username will be saved for next time.')
+  }
+
+  const handleRememberMeCancel = () => {
+    setShowRememberMeDialog(false)
+    // Keep checkbox unchecked
   }
 
   return (
@@ -140,7 +229,7 @@ const Login: React.FC = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <span className="logo-icon"><BrandIcon size={60} /></span>
-          La Bubbles Laundry Shop
+          Sparklean Laundry Shop
         </motion.div>
         
         <motion.div 
@@ -213,6 +302,7 @@ const Login: React.FC = () => {
                 <button 
                   type="button"
                   className="forgot-password"
+                  onClick={() => setShowForgotPasswordModal(true)}
                 >
                   Forgot Password?
                 </button>
@@ -282,7 +372,7 @@ const Login: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
+                    onChange={handleRememberMeChange}
                   />
                   <span>Remember me</span>
                 </label>
@@ -295,6 +385,21 @@ const Login: React.FC = () => {
                 </button>
               </div>
 
+              {/* reCAPTCHA Component */}
+              <GoogleReCAPTCHA
+                onVerify={handleRecaptchaVerify}
+                onExpire={handleRecaptchaExpire}
+                onError={handleRecaptchaError}
+                action="login"
+                className="login-recaptcha"
+                siteKey={(import.meta as any).env?.VITE_RECAPTCHA_SITE_KEY || '6LfBFQMsAAAAALRyqmwdRe_a_YKgtG75-BESHJGL'}
+                version="v3"
+              />
+
+              <div className={`recaptcha-status ${recaptchaToken ? 'ok' : 'wait'}`}>
+                <span className="dot"></span>
+                <span>{recaptchaToken ? 'Security verification ready' : 'Verifying reCAPTCHA…'}</span>
+              </div>
               
               <motion.button 
                 type="submit" 
@@ -320,6 +425,21 @@ const Login: React.FC = () => {
         <div className="version-badge">v1.0.0</div>
       </motion.div>
 
+      <ForgotPasswordModal 
+        isOpen={showForgotPasswordModal}
+        onClose={() => setShowForgotPasswordModal(false)}
+      />
+
+      <ConfirmDialog
+        isOpen={showRememberMeDialog}
+        title="Enable Remember Me?"
+        message="This will save your email and username on this device so you don't have to enter them next time. Your password will never be saved."
+        confirmLabel="Yes, Remember Me"
+        cancelLabel="Cancel"
+        type="info"
+        onConfirm={handleRememberMeConfirm}
+        onCancel={handleRememberMeCancel}
+      />
     </div>
   )
 }

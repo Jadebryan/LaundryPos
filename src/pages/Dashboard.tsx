@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FiTrendingUp, FiTrendingDown, FiUsers, FiPackage, FiClock, FiActivity, FiAlertCircle } from 'react-icons/fi'
+import { FiTrendingUp, FiTrendingDown, FiUsers, FiPackage, FiClock, FiActivity, FiAlertCircle, FiEye, FiEyeOff, FiRotateCcw } from 'react-icons/fi'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar } from 'recharts'
 import { useUser } from '../context/UserContext'
 import { useTheme } from '../context/ThemeContext'
 import Layout from '../components/Layout'
 import Button from '../components/Button'
+import { dashboardAPI } from '../utils/api'
+import toast from 'react-hot-toast'
 import './Dashboard.css'
 
 interface StatCardProps {
@@ -62,11 +64,112 @@ const Dashboard: React.FC = () => {
   const { theme } = useTheme()
   const [timeRange, setTimeRange] = useState('today')
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Dashboard data state
+  const [dashboardData, setDashboardData] = useState({
+    stats: { orders: 0, revenue: 0, pending: 0, customers: 0 },
+    trends: { orders: 0, revenue: 0, pending: 0, customers: 0 },
+    orderStatus: [],
+    revenueTrend: [],
+    recentActivity: [],
+    pendingExpenses: 0
+  })
+  
+  // Dashboard section visibility state
+  const [hiddenSections, setHiddenSections] = useState<{
+    stats: boolean
+    charts: boolean
+    quickActions: boolean
+    activity: boolean
+  }>(() => {
+    const saved = localStorage.getItem('dashboard-hidden-sections')
+    return saved ? JSON.parse(saved) : {
+      stats: false,
+      charts: false,
+      quickActions: false,
+      activity: false
+    }
+  })
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
+
+  // Save hidden sections to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('dashboard-hidden-sections', JSON.stringify(hiddenSections))
+  }, [hiddenSections])
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      // Check if user is logged in before making request
+      const savedUser = localStorage.getItem('user')
+      if (!savedUser) {
+        console.warn('No user found, redirecting to login')
+        navigate('/login')
+        return
+      }
+
+      setIsLoading(true)
+      try {
+        const data = await dashboardAPI.getStats(timeRange)
+        // Ensure data structure is valid
+        if (data && typeof data === 'object') {
+          setDashboardData({
+            stats: data.stats || { orders: 0, revenue: 0, pending: 0, customers: 0 },
+            trends: data.trends || { orders: 0, revenue: 0, pending: 0, customers: 0 },
+            orderStatus: data.orderStatus || [],
+            revenueTrend: data.revenueTrend || [],
+            recentActivity: data.recentActivity || [],
+            pendingExpenses: data.pendingExpenses || 0
+          })
+        } else {
+          throw new Error('Invalid data format received')
+        }
+      } catch (error: any) {
+        console.error('Error fetching dashboard data:', error)
+        const errorMessage = error.message || 'Failed to load dashboard data'
+        
+        // Only show error if it's not an auth error (auth errors are handled by apiRequest)
+        if (!errorMessage.includes('Authentication') && !errorMessage.includes('token')) {
+          toast.error(errorMessage)
+        }
+        
+        // Set default/empty data on error
+        setDashboardData({
+          stats: { orders: 0, revenue: 0, pending: 0, customers: 0 },
+          trends: { orders: 0, revenue: 0, pending: 0, customers: 0 },
+          orderStatus: [],
+          revenueTrend: [],
+          recentActivity: [],
+          pendingExpenses: 0
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [timeRange, navigate])
+
+  const toggleSection = (section: keyof typeof hiddenSections) => {
+    setHiddenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  }
+
+  const resetAllSections = () => {
+    setHiddenSections({
+      stats: false,
+      charts: false,
+      quickActions: false,
+      activity: false
+    })
+  }
 
   const getGreeting = () => {
     const hour = currentTime.getHours()
@@ -75,54 +178,27 @@ const Dashboard: React.FC = () => {
     return '🌙 Good Evening'
   }
 
-  const revenueData = [
-    { name: 'Mon', value: 2400, target: 3000 },
-    { name: 'Tue', value: 1398, target: 3000 },
-    { name: 'Wed', value: 9800, target: 3000 },
-    { name: 'Thu', value: 3908, target: 3000 },
-    { name: 'Fri', value: 4800, target: 3000 },
-    { name: 'Sat', value: 3800, target: 3000 },
-    { name: 'Sun', value: 4300, target: 3000 },
-  ]
+  // Map order status data with colors
+  const orderStatusData = dashboardData.orderStatus.map((status: { name: string; value: number }) => {
+    let color = theme === 'dark' ? '#4B5563' : '#E5E7EB'
+    if (status.name === 'Pending') {
+      color = theme === 'dark' ? '#9A3412' : '#FED7AA'
+    } else if (status.name === 'In Progress') {
+      color = theme === 'dark' ? '#1E3A8A' : '#DBEAFE'
+    } else if (status.name === 'Completed') {
+      color = theme === 'dark' ? '#064E3B' : '#D1FAE5'
+    }
+    return { ...status, color }
+  })
 
-  const orderStatusData = [
-    { 
-      name: 'Pending', 
-      value: 8, 
-      color: theme === 'dark' ? '#9A3412' : '#FED7AA' 
-    },
-    { 
-      name: 'In Progress', 
-      value: 12, 
-      color: theme === 'dark' ? '#1E3A8A' : '#DBEAFE' 
-    },
-    { 
-      name: 'Completed', 
-      value: 24, 
-      color: theme === 'dark' ? '#064E3B' : '#D1FAE5' 
-    },
-  ]
-
-  const recentActivity: ActivityItem[] = [
-    { id: '1', type: 'order', message: 'New order #ORD-2024-005 from Jane Doe', time: '2 min ago', icon: <FiPackage /> },
-    { id: '2', type: 'payment', message: 'Payment received ₱450 from John Smith', time: '15 min ago', icon: <span style={{fontSize: '16px', fontWeight: 'bold'}}>₱</span> },
-    { id: '3', type: 'customer', message: 'New customer registered: Mike Johnson', time: '1 hour ago', icon: <FiUsers /> },
-    { id: '4', type: 'order', message: 'Order #ORD-2024-003 completed', time: '2 hours ago', icon: <FiPackage /> },
-  ]
-
-  const todayStats = {
-    orders: 24,
-    revenue: 2450,
-    pending: 8,
-    customers: 156
-  }
-
-  const yesterdayComparison = {
-    orders: 12,
-    revenue: 8,
-    pending: -5,
-    customers: 15
-  }
+  // Map recent activity with icons
+  const recentActivity: ActivityItem[] = dashboardData.recentActivity.slice(0, 5).map((activity: any) => ({
+    id: activity.id,
+    type: activity.type,
+    message: activity.message,
+    time: activity.time,
+    icon: activity.type === 'order' ? <FiPackage /> : <FiUsers />
+  }))
 
   return (
     <Layout>
@@ -140,6 +216,47 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
           <div className="header-actions">
+            <div className="dashboard-controls">
+              <button 
+                className="control-btn"
+                onClick={resetAllSections}
+                title="Show all sections"
+              >
+                <FiRotateCcw />
+              </button>
+              <button 
+                className={`control-btn ${hiddenSections.stats ? 'active' : ''}`}
+                onClick={() => toggleSection('stats')}
+                title={hiddenSections.stats ? 'Show stats' : 'Hide stats'}
+              >
+                {hiddenSections.stats ? <FiEyeOff /> : <FiEye />}
+                <span>Stats</span>
+              </button>
+              <button 
+                className={`control-btn ${hiddenSections.charts ? 'active' : ''}`}
+                onClick={() => toggleSection('charts')}
+                title={hiddenSections.charts ? 'Show charts' : 'Hide charts'}
+              >
+                {hiddenSections.charts ? <FiEyeOff /> : <FiEye />}
+                <span>Charts</span>
+              </button>
+              <button 
+                className={`control-btn ${hiddenSections.quickActions ? 'active' : ''}`}
+                onClick={() => toggleSection('quickActions')}
+                title={hiddenSections.quickActions ? 'Show quick actions' : 'Hide quick actions'}
+              >
+                {hiddenSections.quickActions ? <FiEyeOff /> : <FiEye />}
+                <span>Actions</span>
+              </button>
+              <button 
+                className={`control-btn ${hiddenSections.activity ? 'active' : ''}`}
+                onClick={() => toggleSection('activity')}
+                title={hiddenSections.activity ? 'Show activity' : 'Hide activity'}
+              >
+                {hiddenSections.activity ? <FiEyeOff /> : <FiEye />}
+                <span>Activity</span>
+              </button>
+            </div>
             <select 
               className="time-range-select"
               value={timeRange}
@@ -154,47 +271,62 @@ const Dashboard: React.FC = () => {
         </div>
         
         {/* Stats Grid */}
-        <div className="stats-grid">
+        {!hiddenSections.stats && (
+          <motion.div 
+            className="stats-grid"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
           <StatCard 
             icon={<FiPackage />}
-            number={todayStats.orders} 
-            label="Orders Today" 
-            trend={yesterdayComparison.orders}
+            number={isLoading ? '...' : dashboardData.stats.orders} 
+            label={timeRange === 'today' ? 'Orders Today' : `Orders (${timeRange})`}
+            trend={dashboardData.trends.orders}
             variant="blue"
             delay={0}
             onClick={() => navigate('/orders')}
           />
           <StatCard 
             icon={<span style={{fontSize: '18px', fontWeight: 'bold'}}>₱</span>}
-            number={`₱${todayStats.revenue.toLocaleString()}`}
-            label="Revenue Today" 
-            trend={yesterdayComparison.revenue}
+            number={isLoading ? '...' : `₱${dashboardData.stats.revenue.toLocaleString()}`}
+            label={timeRange === 'today' ? 'Revenue Today' : `Revenue (${timeRange})`}
+            trend={dashboardData.trends.revenue}
             variant="orange"
             delay={0.1}
             onClick={() => navigate('/reports')}
           />
           <StatCard 
             icon={<FiClock />}
-            number={todayStats.pending} 
+            number={isLoading ? '...' : dashboardData.stats.pending} 
             label="Pending Orders" 
-            trend={yesterdayComparison.pending}
+            trend={dashboardData.trends.pending}
             variant="purple"
             delay={0.2}
             onClick={() => navigate('/orders')}
           />
           <StatCard 
             icon={<FiUsers />}
-            number={todayStats.customers} 
+            number={isLoading ? '...' : dashboardData.stats.customers} 
             label="Total Customers" 
-            trend={yesterdayComparison.customers}
+            trend={dashboardData.trends.customers}
             variant="green"
             delay={0.3}
             onClick={() => navigate('/customers')}
           />
-        </div>
+          </motion.div>
+        )}
 
         {/* Charts Grid */}
-        <div className="charts-grid">
+        {!hiddenSections.charts && (
+          <motion.div 
+            className="charts-grid"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
           <motion.div 
             className="chart-card"
             initial={{ opacity: 0, y: 20 }}
@@ -209,7 +341,7 @@ const Dashboard: React.FC = () => {
               <span className="chart-period">Last 7 days</span>
             </div>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={revenueData}>
+              <BarChart data={isLoading ? [] : dashboardData.revenueTrend}>
                 <XAxis dataKey="name" stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} />
                 <YAxis stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} />
                 <Tooltip 
@@ -284,18 +416,21 @@ const Dashboard: React.FC = () => {
               ))}
             </div>
           </motion.div>
-        </div>
+          </motion.div>
+        )}
 
         {/* Two Column Layout */}
         <div className="dashboard-two-column">
           {/* Left Column - Quick Actions & Recent Orders */}
           <div className="dashboard-left-col">
-            <motion.div 
-              className="quick-actions"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.4 }}
-            >
+            {!hiddenSections.quickActions && (
+              <motion.div 
+                className="quick-actions"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
               <div className="section-header">
                 <h2 className="section-title">⚡ Quick Actions</h2>
                 <p className="section-subtitle">Common tasks</p>
@@ -353,7 +488,8 @@ const Dashboard: React.FC = () => {
                   </div>
                 </motion.div>
               </div>
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* Pending Tasks Alert */}
             <motion.div 
@@ -367,7 +503,10 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="alert-content">
                 <h4 className="alert-title">Attention Required</h4>
-                <p className="alert-message">You have 8 pending orders and 3 expense approvals waiting</p>
+                <p className="alert-message">
+                  You have {dashboardData.stats.pending} pending orders
+                  {user?.role === 'admin' && dashboardData.pendingExpenses > 0 && ` and ${dashboardData.pendingExpenses} expense approval${dashboardData.pendingExpenses > 1 ? 's' : ''} waiting`}
+                </p>
               </div>
               <Button onClick={() => navigate('/orders')}>
                 Review →
@@ -377,12 +516,14 @@ const Dashboard: React.FC = () => {
 
           {/* Right Column - Activity Feed */}
           <div className="dashboard-right-col">
-            <motion.div 
-              className="activity-feed"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.4 }}
-            >
+            {!hiddenSections.activity && (
+              <motion.div 
+                className="activity-feed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: 0.8, duration: 0.4 }}
+              >
               <div className="section-header">
                 <h2 className="section-title">
                   <FiActivity /> Recent Activity
@@ -393,25 +534,36 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="activity-timeline">
-                {recentActivity.map((activity, index) => (
-                  <motion.div
-                    key={activity.id}
-                    className="activity-item"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.9 + index * 0.1 }}
-                  >
-                    <div className={`activity-icon-wrapper ${activity.type}`}>
-                      {activity.icon}
-                    </div>
-                    <div className="activity-details">
-                      <p className="activity-message">{activity.message}</p>
-                      <span className="activity-time">{activity.time}</span>
-                    </div>
-                  </motion.div>
-                ))}
+                {isLoading ? (
+                  <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
+                    Loading activity...
+                  </div>
+                ) : recentActivity.length === 0 ? (
+                  <div style={{ padding: '20px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
+                    No recent activity
+                  </div>
+                ) : (
+                  recentActivity.map((activity, index) => (
+                    <motion.div
+                      key={activity.id}
+                      className="activity-item"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.9 + index * 0.1 }}
+                    >
+                      <div className={`activity-icon-wrapper ${activity.type}`}>
+                        {activity.icon}
+                      </div>
+                      <div className="activity-details">
+                        <p className="activity-message">{activity.message}</p>
+                        <span className="activity-time">{activity.time}</span>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
               </div>
-            </motion.div>
+              </motion.div>
+            )}
           </div>
         </div>
       </motion.div>

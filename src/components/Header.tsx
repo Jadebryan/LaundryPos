@@ -1,11 +1,26 @@
-import React, { useState } from 'react'
-import { FiSun, FiMoon, FiSearch, FiBell, FiMonitor, FiChevronDown, FiShoppingBag, FiCreditCard, FiClock, FiSettings } from 'react-icons/fi'
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { FiSun, FiMoon, FiSearch, FiBell, FiMonitor, FiChevronDown, FiShoppingBag, FiCreditCard, FiClock, FiSettings, FiUsers, FiBox, FiFileText, FiUser, FiLogOut } from 'react-icons/fi'
 import { useTheme } from '../context/ThemeContext'
+import { useUser } from '../context/UserContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKeyboardShortcut } from '../hooks/useKeyboardShortcut'
 import KeyboardShortcuts from './KeyboardShortcuts'
 import BrandIcon from './BrandIcon'
+import { Order, Customer, Service } from '../types'
+import toast from 'react-hot-toast'
+import { notificationAPI, orderAPI, customerAPI, serviceAPI } from '../utils/api'
 import './Header.css'
+
+interface Notification {
+  id: string
+  type: 'order' | 'payment' | 'reminder' | 'system' | 'expense'
+  title: string
+  message: string
+  time: string
+  unread: boolean
+  relatedId?: string | null
+}
 
 interface HeaderProps {
   username?: string
@@ -15,47 +30,164 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) => {
   const initial = username.charAt(0).toUpperCase()
   const { theme, setTheme, cycleTheme } = useTheme()
+  const { logout } = useUser()
+  const navigate = useNavigate()
   const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedIndex, setSelectedIndex] = useState(0)
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
 
-  // Sample notifications data
-  const notifications = [
-    {
-      id: 1,
-      type: 'order',
-      title: 'New Order Received',
-      message: 'Order #1234 from John Doe - Express Service',
-      time: '2 minutes ago',
-      unread: true
-    },
-    {
-      id: 2,
-      type: 'payment',
-      title: 'Payment Completed',
-      message: 'Order #1233 payment received - ₱450.00',
-      time: '15 minutes ago',
-      unread: true
-    },
-    {
-      id: 3,
-      type: 'reminder',
-      title: 'Order Ready for Pickup',
-      message: 'Order #1232 is ready for customer pickup',
-      time: '1 hour ago',
-      unread: false
-    },
-    {
-      id: 4,
-      type: 'system',
-      title: 'System Update',
-      message: 'New features added to the dashboard',
-      time: '2 hours ago',
-      unread: false
+  // Live search state (replaces mock data)
+  const [searching, setSearching] = useState(false)
+  const [apiOrders, setApiOrders] = useState<Order[]>([])
+  const [apiCustomers, setApiCustomers] = useState<Customer[]>([])
+  const [apiServices, setApiServices] = useState<Service[]>([])
+
+  // Fetch from APIs when searchQuery changes (debounced)
+  useEffect(() => {
+    const q = searchQuery.trim()
+    if (!q) {
+      setApiOrders([]); setApiCustomers([]); setApiServices([]); setSearching(false)
+      return
     }
+    setSearching(true)
+    const handle = setTimeout(async () => {
+      try {
+        const [ordersRes, customersRes, servicesRes] = await Promise.all([
+          orderAPI.getAll({ search: q, showArchived: false }),
+          customerAPI.getAll({ search: q, showArchived: false }),
+          serviceAPI.getAll({ search: q, showArchived: false })
+        ])
+        // Helper to parse numbers from strings like "₱1,234.56"
+        const parseAmount = (val: any): number => {
+          if (typeof val === 'number' && isFinite(val)) return val
+          if (typeof val === 'string') {
+            const cleaned = val.replace(/[^0-9.\-]/g, '')
+            const num = parseFloat(cleaned)
+            return isNaN(num) ? 0 : num
+          }
+          return 0
+        }
+        // Normalize data to UI models
+        const mappedOrders: Order[] = (ordersRes || []).slice(0, 5).map((o: any) => {
+          const totalNum = (() => {
+            if (o.totalFee !== undefined) return parseAmount(o.totalFee)
+            if (o.total !== undefined) return parseAmount(o.total)
+            return 0
+          })()
+          return {
+            id: o.orderId || o.id || o._id || '#ORD',
+            date: o.date || o.createDate || o.createdAt ? new Date(o.date || o.createDate || o.createdAt).toLocaleDateString() : '',
+            customer: o.customer || o.customerName || 'Customer',
+            payment: (o.payment || o.feeStatus || 'Unpaid') as any,
+            total: `₱${totalNum.toFixed(2)}`,
+            items: o.items || []
+          }
+        })
+        const mappedCustomers: Customer[] = (customersRes || []).slice(0, 5).map((c: any) => ({
+          id: c._id || c.id,
+          name: c.name,
+          email: c.email,
+          phone: c.phone,
+          totalOrders: c.totalOrders || c.ordersCount || 0,
+          totalSpent: c.totalSpent || c.spent || 0,
+          lastOrder: c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString() : undefined,
+        }))
+        const mappedServices: Service[] = (servicesRes || []).slice(0, 5).map((s: any) => ({
+          id: s._id || s.id,
+          name: s.name,
+          category: s.category || 'Service',
+          price: typeof s.price === 'number' ? s.price : parseAmount(s.price),
+          unit: (s.unit || 'item') as any,
+          isActive: s.isActive,
+        }))
+        setApiOrders(mappedOrders)
+        setApiCustomers(mappedCustomers)
+        setApiServices(mappedServices)
+      } catch (err) {
+        console.error('Search error:', err)
+      } finally {
+        setSearching(false)
+      }
+    }, 300)
+    return () => clearTimeout(handle)
+  }, [searchQuery])
+
+  const mockOrders: Order[] = [
+    { id: '#ORD-2024-001', date: 'Dec 15, 2024', customer: 'John Smith', payment: 'Unpaid', total: '₱150.00', items: [] },
+    { id: '#ORD-2024-002', date: 'Dec 15, 2024', customer: 'Maria Garcia', payment: 'Partial', total: '₱300.00', items: [] },
+    { id: '#ORD-2024-003', date: 'Dec 14, 2024', customer: 'Robert Johnson', payment: 'Paid', total: '₱175.00', items: [] },
+    { id: '#ORD-2024-004', date: 'Dec 13, 2024', customer: 'Sarah Wilson', payment: 'Paid', total: '₱195.00', items: [] },
   ]
 
-  const unreadCount = notifications.filter(n => n.unread).length
+  const mockCustomers: Customer[] = [
+    { id: '1', name: 'John Smith', email: 'john.smith@email.com', phone: '+63 912 345 6789', totalOrders: 12, totalSpent: 3240, lastOrder: 'Dec 15, 2024' },
+    { id: '2', name: 'Maria Garcia', email: 'maria.garcia@email.com', phone: '+63 923 456 7890', totalOrders: 8, totalSpent: 2100, lastOrder: 'Dec 15, 2024' },
+    { id: '3', name: 'Robert Johnson', email: 'robert.j@email.com', phone: '+63 934 567 8901', totalOrders: 15, totalSpent: 4500, lastOrder: 'Dec 14, 2024' },
+    { id: '4', name: 'Sarah Wilson', email: 'sarah.wilson@email.com', phone: '+63 945 678 9012', totalOrders: 6, totalSpent: 1800, lastOrder: 'Dec 13, 2024' },
+  ]
+
+  const mockServices: Service[] = [
+    { id: '1', name: 'Wash & Fold', category: 'Washing', price: 25, unit: 'kg', isActive: true, isPopular: true },
+    { id: '2', name: 'Dry Cleaning', category: 'Dry Cleaning', price: 150, unit: 'item', isActive: true, isPopular: true },
+    { id: '3', name: 'Ironing', category: 'Ironing', price: 15, unit: 'item', isActive: true },
+    { id: '4', name: 'Express Service', category: 'Special', price: 50, unit: 'flat', isActive: true },
+  ]
+
+  // Fetch notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setIsLoadingNotifications(true)
+      try {
+        const data = await notificationAPI.getAll(false)
+        setNotifications(data.notifications || [])
+        setUnreadCount(data.unreadCount || 0)
+      } catch (error: any) {
+        console.error('Error fetching notifications:', error)
+        // Set empty notifications on error
+        setNotifications([])
+        setUnreadCount(0)
+      } finally {
+        setIsLoadingNotifications(false)
+      }
+    }
+
+    fetchNotifications()
+    // Refresh notifications every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000)
+    // Live updates via SSE
+    try {
+      const user = localStorage.getItem('user')
+      const token = user ? (JSON.parse(user)?.token || '') : ''
+      if (token) {
+        const streamUrl = `${(import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api'}/notifications/stream?token=${encodeURIComponent(token)}`
+        const es = new EventSource(streamUrl)
+        es.onmessage = (evt) => {
+          try {
+            const notif = JSON.parse(evt.data)
+            setNotifications(prev => [{ ...notif }, ...prev])
+            setUnreadCount(prev => prev + (notif?.unread ? 1 : 0))
+          } catch {}
+        }
+        es.onerror = () => {
+          // Let polling continue; close broken stream
+          try { es.close() } catch {}
+        }
+        return () => {
+          clearInterval(interval)
+          try { es.close() } catch {}
+        }
+      }
+    } catch {}
+    return () => clearInterval(interval)
+  }, [])
 
   const themeOptions = [
     { value: 'light', label: 'Light', icon: FiSun },
@@ -64,6 +196,93 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
   ]
 
   const currentTheme = themeOptions.find(option => option.value === theme)
+
+  // Search results
+  const searchResults = {
+    orders: apiOrders,
+    customers: apiCustomers,
+    services: apiServices,
+  }
+
+  const allResults = [
+    ...searchResults.orders.map((o) => ({ type: 'order', data: o })),
+    ...searchResults.customers.map((c) => ({ type: 'customer', data: c })),
+    ...searchResults.services.map((s) => ({ type: 'service', data: s })),
+  ]
+
+  const hasResults = allResults.length > 0 && searchQuery.trim().length > 0
+
+  // Handle result selection
+  const handleResultSelect = (result: { type: string; data: any }) => {
+    if (result.type === 'order') {
+      navigate('/orders')
+    } else if (result.type === 'customer') {
+      navigate('/customers')
+    } else if (result.type === 'service') {
+      navigate('/services')
+    }
+    setSearchOpen(false)
+    setSearchQuery('')
+    setSelectedIndex(0)
+  }
+
+  // Close search on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (searchOpen && !target.closest('.search-dropdown')) {
+        setSearchOpen(false)
+        setSearchQuery('')
+      }
+      if (userMenuOpen && !target.closest('.user-menu-dropdown')) {
+        setUserMenuOpen(false)
+      }
+    }
+
+    if (searchOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      searchInputRef.current?.focus()
+    }
+
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [searchOpen, userMenuOpen])
+
+  const handleLogout = () => {
+    logout()
+    toast.success('Logged out successfully!')
+    setUserMenuOpen(false)
+    setTimeout(() => {
+      navigate('/login')
+    }, 500)
+  }
+
+  // Reset selected index when query changes
+  useEffect(() => {
+    setSelectedIndex(0)
+  }, [searchQuery])
+
+  // Keyboard navigation in search
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedIndex(prev => Math.min(prev + 1, allResults.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedIndex(prev => Math.max(prev - 1, 0))
+    } else if (e.key === 'Enter' && allResults.length > 0) {
+      e.preventDefault()
+      handleResultSelect(allResults[selectedIndex])
+    } else if (e.key === 'Escape') {
+      setSearchOpen(false)
+      setSearchQuery('')
+    }
+  }
 
   // Set up keyboard shortcuts for theme switching and search
   useKeyboardShortcut([
@@ -95,8 +314,8 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
       key: 'k',
       ctrl: true,
       callback: () => {
-        console.log('Opening global search')
         setSearchOpen(true)
+        setTimeout(() => searchInputRef.current?.focus(), 100)
       }
     }
   ])
@@ -108,7 +327,7 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
           <div className="logo">
             <BrandIcon size={22} />
             <div className="logo-text">
-              <span className="brand-part-1">La Bubbles</span>
+              <span className="brand-part-1">Sparklean</span>
               <span className="brand-part-2">Laundry Shop</span>
               <span className="brand-part-3">{role === 'admin' ? 'Admin' : 'Staff'}</span>
             </div>
@@ -137,26 +356,133 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
               >
                  <div className="search-header">
                    <input
+                     ref={searchInputRef}
                      type="text"
                      placeholder="Search orders, customers, services..."
-                     autoFocus
+                     value={searchQuery}
+                     onChange={(e) => setSearchQuery(e.target.value)}
+                     onKeyDown={handleSearchKeyDown}
                      className="search-input"
                    />
+                   {searchQuery && (
+                     <button 
+                       className="search-clear-btn"
+                       onClick={() => {
+                         setSearchQuery('')
+                         searchInputRef.current?.focus()
+                       }}
+                     >
+                       ×
+                     </button>
+                   )}
                  </div>
                 
                 <div className="search-suggestions">
-                  <div className="suggestion-category">
-                    <h4>Recent Searches</h4>
-                    <div className="suggestion-item">Order #1234</div>
-                    <div className="suggestion-item">John Doe</div>
-                    <div className="suggestion-item">Express Service</div>
-                  </div>
-                  <div className="suggestion-category">
-                    <h4>Quick Actions</h4>
-                    <div className="suggestion-item">Create New Order</div>
-                    <div className="suggestion-item">View Reports</div>
-                    <div className="suggestion-item">Manage Services</div>
-                  </div>
+                  {hasResults ? (
+                    <>
+                      {searchResults.orders.length > 0 && (
+                        <div className="suggestion-category">
+                          <h4><FiShoppingBag /> Orders ({searchResults.orders.length})</h4>
+                          {searchResults.orders.map((order) => {
+                            const resultIndex = allResults.findIndex(r => r.type === 'order' && r.data.id === order.id)
+                            return (
+                              <div
+                                key={order.id}
+                                className={`suggestion-item ${resultIndex === selectedIndex ? 'selected' : ''}`}
+                                onClick={() => handleResultSelect({ type: 'order', data: order })}
+                              >
+                                <div className="suggestion-item-main">
+                                  <span className="suggestion-title">{order.id}</span>
+                                  <span className="suggestion-subtitle">{order.customer}</span>
+                                </div>
+                                <span className="suggestion-meta">{order.total}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                      {searchResults.customers.length > 0 && (
+                        <div className="suggestion-category">
+                          <h4><FiUsers /> Customers ({searchResults.customers.length})</h4>
+                          {searchResults.customers.map((customer) => {
+                            const resultIndex = allResults.findIndex(r => r.type === 'customer' && r.data.id === customer.id)
+                            return (
+                              <div
+                                key={customer.id}
+                                className={`suggestion-item ${resultIndex === selectedIndex ? 'selected' : ''}`}
+                                onClick={() => handleResultSelect({ type: 'customer', data: customer })}
+                              >
+                                <div className="suggestion-item-main">
+                                  <span className="suggestion-title">{customer.name}</span>
+                                  <span className="suggestion-subtitle">{customer.email}</span>
+                                </div>
+                                <span className="suggestion-meta">{customer.totalOrders} orders</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                      {searchResults.services.length > 0 && (
+                        <div className="suggestion-category">
+                          <h4><FiBox /> Services ({searchResults.services.length})</h4>
+                          {searchResults.services.map((service) => {
+                            const resultIndex = allResults.findIndex(r => r.type === 'service' && r.data.id === service.id)
+                            return (
+                              <div
+                                key={service.id}
+                                className={`suggestion-item ${resultIndex === selectedIndex ? 'selected' : ''}`}
+                                onClick={() => handleResultSelect({ type: 'service', data: service })}
+                              >
+                                <div className="suggestion-item-main">
+                                  <span className="suggestion-title">{service.name}</span>
+                                  <span className="suggestion-subtitle">{service.category}</span>
+                                </div>
+                                <span className="suggestion-meta">₱{service.price}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </>
+                  ) : searchQuery.trim().length > 0 ? (
+                    <div className="search-no-results">
+                      <FiFileText />
+                      <p>No results found for "{searchQuery}"</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="suggestion-category">
+                        <h4 className="no-icon">Quick Actions</h4>
+                        <div 
+                          className="suggestion-item"
+                          onClick={() => {
+                            navigate('/create-order')
+                            setSearchOpen(false)
+                          }}
+                        >
+                          <FiCreditCard /> Create New Order
+                        </div>
+                        <div 
+                          className="suggestion-item"
+                          onClick={() => {
+                            navigate('/reports')
+                            setSearchOpen(false)
+                          }}
+                        >
+                          <FiFileText /> View Reports
+                        </div>
+                        <div 
+                          className="suggestion-item"
+                          onClick={() => {
+                            navigate('/services')
+                            setSearchOpen(false)
+                          }}
+                        >
+                          <FiBox /> Manage Services
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </motion.div>
             )}
@@ -189,30 +515,80 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
                 </div>
                 
                 <div className="notification-list">
-                  {notifications.map((notification) => (
-                    <div 
-                      key={notification.id} 
-                      className={`notification-item ${notification.unread ? 'unread' : ''}`}
-                    >
-                      <div className="notification-icon">
-                        {notification.type === 'order' && <FiShoppingBag />}
-                        {notification.type === 'payment' && <FiCreditCard />}
-                        {notification.type === 'reminder' && <FiClock />}
-                        {notification.type === 'system' && <FiSettings />}
-                      </div>
-                      <div className="notification-content">
-                        <div className="notification-title">{notification.title}</div>
-                        <div className="notification-message">{notification.message}</div>
-                        <div className="notification-time">{notification.time}</div>
-                      </div>
-                      {notification.unread && <div className="unread-dot"></div>}
+                  {isLoadingNotifications ? (
+                    <div className="notification-loading">
+                      <div>Loading notifications...</div>
                     </div>
-                  ))}
+                  ) : notifications.length === 0 ? (
+                    <div className="notification-empty">
+                      <div>No notifications</div>
+                      <div className="notification-empty-text">You're all caught up!</div>
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div 
+                        key={notification.id} 
+                        className={`notification-item ${notification.unread ? 'unread' : ''}`}
+                        onClick={async () => {
+                          if (notification.unread) {
+                            try {
+                              await notificationAPI.markAsRead(notification.id)
+                              setNotifications(notifications.map(n => 
+                                n.id === notification.id ? { ...n, unread: false } : n
+                              ))
+                              setUnreadCount(Math.max(0, unreadCount - 1))
+                            } catch (error: any) {
+                              console.error('Error marking notification as read:', error)
+                            }
+                          }
+                          // Navigate based on notification type
+                          if (notification.relatedId) {
+                            if (notification.type === 'order') {
+                              navigate(`/orders`)
+                            } else if (notification.type === 'expense') {
+                              navigate(`/expenses`)
+                            }
+                          }
+                        }}
+                      >
+                        <div className="notification-icon">
+                          {notification.type === 'order' && <FiShoppingBag />}
+                          {notification.type === 'payment' && <FiCreditCard />}
+                          {notification.type === 'reminder' && <FiClock />}
+                          {notification.type === 'system' && <FiSettings />}
+                          {notification.type === 'expense' && <FiFileText />}
+                        </div>
+                        <div className="notification-content">
+                          <div className="notification-title">{notification.title}</div>
+                          <div className="notification-message">{notification.message}</div>
+                          <div className="notification-time">{notification.time}</div>
+                        </div>
+                        {notification.unread && <div className="unread-dot"></div>}
+                      </div>
+                    ))
+                  )}
                 </div>
                 
                 <div className="notification-footer">
-                  <button className="mark-all-read">Mark all as read</button>
-                  <button className="view-all">View all notifications</button>
+                  <button 
+                    className="mark-all-read"
+                    onClick={async () => {
+                      try {
+                        await notificationAPI.markAllAsRead()
+                        setNotifications(notifications.map(n => ({ ...n, unread: false })))
+                        setUnreadCount(0)
+                        toast.success('All notifications marked as read')
+                      } catch (error: any) {
+                        console.error('Error marking all as read:', error)
+                        toast.error('Failed to mark all as read')
+                      }
+                    }}
+                  >
+                    Mark all as read
+                  </button>
+                  <button className="view-all" onClick={() => navigate('/orders')}>
+                    View all notifications
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -265,9 +641,53 @@ const Header: React.FC<HeaderProps> = ({ username = 'Admin', role = 'admin' }) =
         <KeyboardShortcuts />
 
         {/* User Info */}
-        <div className="user-info">
-          <span className="username">Welcome, {username}</span>
-          <div className="user-avatar">{initial}</div>
+        <div className="user-menu-dropdown" ref={userMenuRef}>
+          <div 
+            className="user-info"
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+          >
+            <span className="username">Welcome, {username}</span>
+            <div className="user-avatar">{initial}</div>
+          </div>
+
+          <AnimatePresence>
+            {userMenuOpen && (
+              <motion.div
+                className="user-menu-panel"
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="user-menu-header">
+                  <div className="user-menu-avatar">{initial}</div>
+                  <div className="user-menu-info">
+                    <div className="user-menu-name">{username}</div>
+                    <div className="user-menu-role">{role === 'admin' ? 'Administrator' : 'Staff'}</div>
+                  </div>
+                </div>
+                <div className="user-menu-divider"></div>
+                <div className="user-menu-items">
+                  <button
+                    className="user-menu-item"
+                    onClick={() => {
+                      navigate('/settings')
+                      setUserMenuOpen(false)
+                    }}
+                  >
+                    <FiSettings /> Settings
+                  </button>
+                  <div className="user-menu-divider"></div>
+                  <button
+                    className="user-menu-item logout"
+                    onClick={handleLogout}
+                  >
+                    <FiLogOut /> Logout
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         </div>
       </div>

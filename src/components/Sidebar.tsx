@@ -3,16 +3,18 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FiMenu, FiX, FiLogOut, FiHome, FiCreditCard, FiBox, FiList, 
-  FiPercent, FiBarChart2, FiSettings, FiFlag, FiHelpCircle, FiUsers, FiUser, FiFileText 
+  FiPercent, FiBarChart2, FiSettings, FiFlag, FiHelpCircle, FiUsers, FiUser, FiFileText, FiMapPin
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import { useUser } from '../context/UserContext'
+import { useTheme } from '../context/ThemeContext'
 import './Sidebar.css'
 
 const Sidebar: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const navigate = useNavigate()
   const { logout } = useUser()
+  const { sidebarCollapsed, toggleSidebar } = useTheme()
 
   const menuItems = [
     { path: '/dashboard', icon: <FiHome />, label: 'Dashboard' },
@@ -20,6 +22,7 @@ const Sidebar: React.FC = () => {
     { path: '/orders', icon: <FiList />, label: 'Manage Orders' },
     { path: '/customers', icon: <FiUsers />, label: 'Customers' },
     { path: '/employees', icon: <FiUser />, label: 'Employees' },
+    { path: '/stations', icon: <FiMapPin />, label: 'Stations' },
     { path: '/services', icon: <FiBox />, label: 'Services' },
     { path: '/discounts', icon: <FiPercent />, label: 'Discounts' },
     { path: '/expenses', icon: <span style={{fontSize: '18px', fontWeight: 'bold'}}>₱</span>, label: 'Expenses' },
@@ -66,14 +69,27 @@ const Sidebar: React.FC = () => {
 
       {/* Sidebar */}
       <motion.div 
-        className={`sidebar ${isMobileOpen ? 'mobile-open' : ''}`}
+        className={`sidebar ${isMobileOpen ? 'mobile-open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}
         initial={false}
         animate={{
-          x: isMobileOpen ? 0 : '-100%'
+          x: isMobileOpen ? 0 : '-100%',
+          width: sidebarCollapsed ? 60 : 250
         }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
+        {/* Sidebar Header with Toggle */}
+        <div className="sidebar-header">
+          <button 
+            className="sidebar-toggle-btn"
+            onClick={toggleSidebar}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <FiMenu />
+          </button>
+        </div>
+
         <div className="nav-section">
-          <div className="nav-section-title">Menu</div>
+          <div className="nav-section-title">{!sidebarCollapsed && 'Menu'}</div>
           {menuItems.map((item, index) => (
             <motion.div
               key={item.path}
@@ -85,16 +101,17 @@ const Sidebar: React.FC = () => {
                 to={item.path}
                 className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                 onClick={() => setIsMobileOpen(false)}
+                title={sidebarCollapsed ? item.label : undefined}
               >
                 <span className="icon">{item.icon}</span>
-                {item.label}
+                {!sidebarCollapsed && item.label}
               </NavLink>
             </motion.div>
           ))}
         </div>
 
         <div className="nav-section">
-          <div className="nav-section-title">Generals</div>
+          <div className="nav-section-title">{!sidebarCollapsed && 'Generals'}</div>
           {generalItems.map((item, index) => (
             <motion.div
               key={item.label}
@@ -113,18 +130,20 @@ const Sidebar: React.FC = () => {
                       item.onClick && item.onClick()
                     }
                   }}
+                  title={sidebarCollapsed ? item.label : undefined}
                 >
                   <span className="icon">{item.icon}</span>
-                  <span>{item.label}</span>
+                  {!sidebarCollapsed && <span>{item.label}</span>}
                 </button>
               ) : (
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                   onClick={() => setIsMobileOpen(false)}
+                  title={sidebarCollapsed ? item.label : undefined}
                 >
                   <span className="icon">{item.icon}</span>
-                  {item.label}
+                  {!sidebarCollapsed && item.label}
                 </NavLink>
               )}
             </motion.div>

@@ -20,6 +20,74 @@
   align-items: center;
 }
 
+/* Export Dropdown */
+.export-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.export-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 200px;
+  margin-top: 4px;
+}
+
+.export-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.export-header span {
+  display: block;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  font-size: 14px;
+}
+
+.export-header small {
+  display: block;
+  color: var(--color-gray-500);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.export-options {
+  padding: 8px 0;
+}
+
+.export-option {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-gray-700);
+  transition: background-color 0.2s ease;
+}
+
+.export-option:hover {
+  background: var(--color-gray-50);
+}
+
+.export-option svg {
+  font-size: 16px;
+  color: var(--color-gray-500);
+}
+
 .bulk-actions {
   display: flex;
   gap: 12px;
@@ -1087,4 +1155,281 @@
   .orders-table td {
     padding: 10px 8px;
   }
+}
+
+/* Archive Toggle Button */
+.archive-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--color-gray-600);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.archive-toggle-btn:hover {
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+  background: var(--color-very-light-blue);
+}
+
+.archive-toggle-btn.active {
+  background: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: white;
+}
+
+.archive-toggle-btn.active:hover {
+  background: var(--color-dark-blue);
+}
+
+.archive-toggle-btn svg {
+  font-size: 16px;
+}
+
+/* Archived Items Styling */
+.orders-table tr.archived {
+  opacity: 0.7;
+  background: var(--color-gray-50);
+}
+
+.orders-table tr.archived:hover {
+  opacity: 0.9;
+  background: var(--color-gray-100);
+}
+
+/* Draft Order Styling */
+.orders-table tr.draft {
+  background: linear-gradient(90deg, var(--color-very-light-blue) 0%, transparent 4%);
+  border-left: 3px solid var(--color-primary-blue);
+}
+
+.orders-table tr.draft:hover {
+  background: linear-gradient(90deg, var(--color-very-light-blue) 0%, var(--color-gray-50) 4%);
+}
+
+.order-id {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.draft-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  padding: 2px 6px;
+  background: var(--color-very-light-blue);
+  color: var(--color-primary-blue);
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.drafts-toggle.active {
+  background: var(--color-very-light-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+}
+
+/* Completed Draft Badge */
+.completed-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  color: var(--color-success);
+  font-size: 14px;
+}
+
+.converted-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.converted-order-info {
+  font-size: 11px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+[data-theme="dark"] .converted-order-info {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dim"] .converted-order-info {
+  color: var(--color-gray-500);
+}
+
+.scheduled-deletion-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--color-gray-500);
+  font-style: italic;
+}
+
+.scheduled-deletion-info svg {
+  color: var(--color-warning);
+}
+
+.btn-icon-small.completed {
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.btn-icon-small.completed:hover {
+  background: var(--color-very-light-green);
+  border-color: var(--color-dark-green);
+  color: var(--color-dark-green);
+}
+
+.btn-icon-small.archive {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+
+.btn-icon-small.archive:hover {
+  background: var(--color-very-light-orange);
+  border-color: var(--color-dark-orange);
+  color: var(--color-dark-orange);
+}
+
+.btn-icon-small:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .completed-badge {
+  color: var(--color-success);
+}
+
+[data-theme="dark"] .scheduled-deletion-info {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .scheduled-deletion-info svg {
+  color: var(--color-warning);
+}
+
+[data-theme="dim"] .completed-badge {
+  color: var(--color-success);
+}
+
+[data-theme="dim"] .scheduled-deletion-info {
+  color: var(--color-gray-600);
+}
+
+/* Restore Button */
+.btn-icon-small.restore {
+  color: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+}
+
+.btn-icon-small.restore:hover {
+  background: var(--color-very-light-blue);
+  border-color: var(--color-dark-blue);
+  color: var(--color-dark-blue);
+}
+
+/* Dark Mode for Archive Toggle */
+[data-theme="dark"] .archive-toggle-btn {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .archive-toggle-btn:hover {
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+  background: var(--color-very-light-blue);
+}
+
+[data-theme="dark"] .archive-toggle-btn.active {
+  background: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dark"] .orders-table tr.archived {
+  background: var(--color-gray-700);
+}
+
+[data-theme="dark"] .orders-table tr.draft {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.2) 0%, transparent 4%);
+  border-left-color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .orders-table tr.draft:hover {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.25) 0%, var(--color-gray-700) 4%);
+}
+
+[data-theme="dark"] .draft-badge {
+  background: rgba(37, 99, 235, 0.2);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dark"] .drafts-toggle.active {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+}
+
+/* Dim Mode for Archive Toggle */
+[data-theme="dim"] .archive-toggle-btn {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dim"] .orders-table tr.draft {
+  background: linear-gradient(90deg, var(--color-very-light-blue) 0%, transparent 4%);
+  border-left-color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .orders-table tr.draft:hover {
+  background: linear-gradient(90deg, var(--color-very-light-blue) 0%, var(--color-gray-100) 4%);
+}
+
+[data-theme="dim"] .draft-badge {
+  background: var(--color-very-light-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .drafts-toggle.active {
+  background: var(--color-very-light-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+}
+
+[data-theme="dim"] .archive-toggle-btn:hover {
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue);
+  background: var(--color-very-light-blue);
+}
+
+[data-theme="dim"] .archive-toggle-btn.active {
+  background: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: white;
+}
+
+[data-theme="dim"] .orders-table tr.archived {
+  background: var(--color-gray-200);
 }

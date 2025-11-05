@@ -1,14 +1,36 @@
 import React, { useState } from 'react'
 import { FiMessageCircle } from 'react-icons/fi'
+import toast from 'react-hot-toast'
 import './Feedback.css'
 
 const Feedback: React.FC = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Feedback submitted!')
+    
+    if (!title || !description) {
+      toast.error('Please fill in all required fields')
+      return
+    }
+
+
+    setIsLoading(true)
+    
+    try {
+      // Simulate feedback submission with reCAPTCHA verification
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      toast.success('Feedback submitted successfully! Thank you for your input.')
+      setTitle('')
+      setDescription('')
+    } catch (error) {
+      toast.error('Failed to submit feedback. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -19,7 +41,7 @@ const Feedback: React.FC = () => {
           <h1>Feedback & Support</h1>
         </div>
         <p className="feedback-subtitle">
-          Help us improve La Bubbles Laundry POS by sharing your thoughts, reporting issues, or suggesting new features
+          Help us improve Sparklean Laundry POS by sharing your thoughts, reporting issues, or suggesting new features
         </p>
       </div>
 
@@ -49,9 +71,14 @@ const Feedback: React.FC = () => {
             />
           </div>
 
+
           <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              Submit Feedback
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Submitting...' : 'Submit Feedback'}
             </button>
           </div>
         </form>
@@ -64,7 +91,7 @@ const Feedback: React.FC = () => {
             <div className="contact-methods">
               <div className="contact-method">
                 <strong>Email Support</strong>
-                <span>labubbles@example.com</span>
+                <span>sparklean@example.com</span>
               </div>
               <div className="contact-method">
                 <strong>Phone Support</strong>

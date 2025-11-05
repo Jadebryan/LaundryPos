@@ -6,7 +6,7 @@ import './ConfirmDialog.css'
 interface ConfirmDialogProps {
   isOpen: boolean
   title: string
-  message: string
+  message: string | React.ReactNode
   confirmLabel?: string
   cancelLabel?: string
   onConfirm: () => void

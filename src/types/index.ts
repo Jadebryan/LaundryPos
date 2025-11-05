@@ -32,7 +32,21 @@ export interface Order {
   discount?: string
   paid?: number
   balance?: string
+  change?: number
   creditedBy?: string
+  isArchived?: boolean
+  isDraft?: boolean
+  isCompleted?: boolean
+  scheduledDeleteAt?: string | null
+  convertedOrderId?: string | null
+  stationId?: string
+  lastEditedBy?: {
+    _id?: string
+    username?: string
+    email?: string
+    fullName?: string
+  }
+  lastEditedAt?: string | Date
 }
 
 // Customer Types
@@ -45,6 +59,7 @@ export interface Customer {
   totalSpent: number
   lastOrder: string
   avatar?: string
+  stationId?: string
 }
 
 // Employee Types
@@ -59,6 +74,7 @@ export interface Employee {
   status: EmployeeStatus
   hireDate: string
   avatar?: string
+  stationId?: string
 }
 
 // Service Types
@@ -76,8 +92,13 @@ export interface Service {
 }
 
 // Expense Types
-export type ExpenseStatus = 'Pending' | 'Approved' | 'Rejected'
+export type ExpenseStatus = 'Pending' | 'Approved' | 'Rejected' | 'Appealed'
 export type ExpenseCategory = 'Supplies' | 'Utilities' | 'Maintenance' | 'Salaries' | 'Other'
+
+export interface ExpenseReceipt {
+  image: string
+  uploadedAt: string
+}
 
 export interface Expense {
   id: string
@@ -89,6 +110,13 @@ export interface Expense {
   status: ExpenseStatus
   approvedBy?: string
   receipt?: string
+  images?: string[]
+  receipts?: ExpenseReceipt[]
+  stationId?: string
+  adminFeedback?: string
+  appealReason?: string
+  appealedAt?: string
+  appealImages?: string[]
 }
 
 // Report Types
@@ -110,5 +138,18 @@ export interface DashboardStats {
   revenueToday: number
   pendingOrders: number
   totalCustomers: number
+}
+
+// Station Types
+export interface Station {
+  _id?: string
+  id?: string
+  stationId: string
+  name: string
+  address?: string
+  phone?: string
+  isActive: boolean
+  isArchived?: boolean
+  notes?: string
 }
 

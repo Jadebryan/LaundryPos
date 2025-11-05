@@ -11,8 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.6",
+    "@types/react-window": "^1.8.8",
     "date-fns": "^3.0.6",
     "framer-motion": "^10.16.16",
+    "jspdf": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-recaptcha": "^2.1.0",
@@ -20,6 +23,7 @@
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.20.1",
     "react-use": "^17.4.2",
+    "react-window": "^2.2.2",
     "recharts": "^2.10.3"
   },
   "devDependencies": {
@@ -33,6 +37,7 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "rollup-plugin-visualizer": "^6.0.5",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }
